@@ -1,1218 +1,956 @@
+{%- liquid
+  assign s = section.settings
+  assign sec_id = section.id
+  assign cols = s.columns | plus: 0
+  assign img_count = section.blocks.size
+
+  comment
+    Derived values — these used to be their own theme settings, but the schema
+    hit theme-check's 40-setting cap. Anything that can sensibly key off an
+    existing setting is now computed here instead, which keeps the settings
+    panel manageable without losing any behaviour.
+  endcomment
+  assign pad_y_mobile = s.padding_y | times: 0.6 | round
+  assign content_gap_mobile = s.content_gap | times: 0.6 | round
+  assign media_h_mobile = s.media_height | times: 0.55 | round
+  assign img_gap_mobile = s.image_gap | times: 0.6 | round
+  assign img_half_gap = s.image_gap | divided_by: 2
+  assign img_half_gap_mobile = img_gap_mobile | divided_by: 2
+  assign content_gap_tablet = s.content_gap | times: 0.6 | round
+-%}
+
 {%- style -%}
-            .banner-overlap-{{ section.id }} {
-              position: relative;
-              padding-top: {{ section.settings.padding_top }}px;
-              padding-bottom: {{ section.settings.padding_bottom }}px;
-            }
-
-          @media (min-width: 701px) {
-            .banner-overlap-{{ section.id }} {
-              margin-bottom: -76px !important;
-            }
-          }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__image-wrap {
-              position: relative;
-              width: 100%;
-              height: {{ section.settings.image_height_mobile }}px;
-              overflow: hidden;
-              border-radius: var(--media-radius, 0);
-              width: 100vw;
-          margin-left: calc(50% - 50vw);
-          margin-right: calc(50% - 50vw);
-            }
-
-            .banner-overlap-{{ section.id }}.full-width .banner-overlap__image-wrap > img,
-            .banner-overlap-{{ section.id }}.full-width .banner-overlap__video{
-                border-radius:0;
-            }
-
-            /* .banner-overlap-{{ section.id }}.page-width .banner-overlap__image-wrap > img,
-            .banner-overlap-{{ section.id }}.page-width .banner-overlap__video{
-                border-radius:20px;
-            } */
-
-        .banner-overlap-{{ section.id }} .banner-overlap__image-wrap {
-          border-radius: 0 !important;
-        }
-        .banner-overlap-{{ section.id }} .banner-overlap__image-wrap > img,
-        .banner-overlap-{{ section.id }} .banner-overlap__video {
-          border-radius: 0 !important;
-        }
-
-            @media screen and (min-width: 750px) {
-              .banner-overlap-{{ section.id }} .banner-overlap__image-wrap {
-                height: {{ section.settings.image_height }}px;
-              }
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__image {
-              position: absolute;
-              inset: 0;
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              object-position: center;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__overlay {
-              position: absolute;
-              inset: 0;
-              background: #000;
-              opacity: var(--overlay-opacity, 0);
-              pointer-events: none;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__content {
-              position: absolute;
-              inset: 0;
-              z-index: 2;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              padding: 5% 6%;
-              max-width: 825px;
-              color: {{ section.settings.text_color }};
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__content--left { align-items: flex-start; text-align: left; }
-            .banner-overlap-{{ section.id }} .banner-overlap__content--center { align-items: center; text-align: center; margin-inline: auto; }
-            .banner-overlap-{{ section.id }} .banner-overlap__content--right { align-items: flex-end; text-align: right; margin-left: auto; }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__caption {
-              font-size: 0.85rem;
-              letter-spacing: 0.08em;
-              text-transform: uppercase;
-              margin: 0 0 0.75rem;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__heading {
-              font-size: 72px;
-              line-height: 0.8;
-              margin: 0 0 1rem;
-            }
-
-            @media (width<= 720px){
-              .banner-overlap-{{ section.id }} .banner-overlap__heading {
-              font-size: 52px;
-            }
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__text {
-              font-size: 1rem;
-              margin: 0 0 1.5rem;
-              max-width: 34ch;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__button {
-              display: inline-flex;
-              align-items: center;
-              gap: 0.5rem;
-              background: {{ section.settings.button_background }};
-              color: {{ section.settings.button_text_color }};
-              padding: 10px 20px;
-              border-radius: 999px;
-              font-weight: 600;
-              text-decoration: none;
-              font-size: 0.95rem;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__button-icon {
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 1.5rem;
-              height: 1.5rem;
-              border-radius: 50%;
-              background: rgba(0, 0, 0, 0.08);
-              font-size: 0.8rem;
-            }
-
-            /* --- Overlap wrapper: pulls the collection grid up onto the image --- */
-            .banner-overlap-{{ section.id }} .banner-overlap__collection-wrap {
-              position: relative;
-              z-index: 3;
-              width: 100%;
-              max-width: 100%;
-              padding-inline: 0rem;
-              transform: translateY(calc(-1 * var(--overlap-percentage)));
-
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__carousel {
-              position: relative;
-              background: rgba(0, 0, 0, 0.5);
-              border-radius: 24px;
-              box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), inset 0 2px 12px rgba(0, 0, 0, 0.08);
-              padding: 1.5rem;
-
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__carousel-nav {
-              display: flex;
-              justify-content: flex-end;
-              gap: 0.5rem;
-              margin-bottom: 0.75rem;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__carousel-button {
-              width: 2.5rem;
-              height: 2.5rem;
-              border-radius: 50%;
-              border: 1px solid rgba(0, 0, 0, 0.15);
-              background: #fff;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 1.1rem;
-              line-height: 1;
-              transition: background 0.15s ease;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__carousel-button:hover {
-              background: #f2f2f2;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__carousel-button:disabled {
-              opacity: 0.35;
-              cursor: default;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__grid {
-              list-style: none;
-              margin: 0;
-              padding: 0 0 0.5rem;
-              display: flex;
-              gap: 1rem;
-              overflow-x: auto;
-              scroll-snap-type: x mandatory;
-              -webkit-overflow-scrolling: touch;
-              scrollbar-width: none;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__grid::-webkit-scrollbar {
-              display: none;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card {
-              flex: 0 0 auto;
-              height: {{ section.settings.gallery_height_mobile | default: 260 }}px;
-              scroll-snap-align: start;
-            }
-
-            @media screen and (min-width: 750px) {
-              .banner-overlap-{{ section.id }} .banner-overlap__grid {
-                gap: 1.5rem;
-              }
-
-              .banner-overlap-{{ section.id }} .banner-overlap__card {
-
-                height: {{ section.settings.gallery_height | default: 420 }}px;
-              }
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card {
-              background: {{ section.settings.card_background }};
-              border-radius: 14px;
-              overflow: hidden;
-              box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-              transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card:hover {
-              /* transform: translateY(-8px) scale(1.02); */
-              box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-media {
-              position: relative;
-              height: 100%;
-              width: auto;
-              background: #eee;
-              overflow: hidden;
-            }
-            .banner-overlap-{{ section.id }} .banner-overlap__card-image--front {
-            position: static !important;
-            height: 100%;
-            width: auto;
-            display: block;
-            object-fit: contain;
-              }
-            .banner-overlap-{{ section.id }} .banner-overlap__card-media svg {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-image--front,
-            .banner-overlap-{{ section.id }} .banner-overlap__card-image--back {
-              position: absolute;
-              inset: 0;
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              will-change: transform, clip-path;
-            }
-
-            /* Two-image cards: back image sits underneath, front wipes away via JS */
-            .banner-overlap-{{ section.id }} .banner-overlap__card-media--flippable .banner-overlap__card-image--front {
-              z-index: 2;
-              clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-media--flippable .banner-overlap__card-image--back {
-              z-index: 1;
-              transform: scale(1.08);
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__badge {
-              position: absolute;
-              top: 0.75rem;
-              left: 0.75rem;
-              z-index: 4;
-              font-size: 0.7rem;
-              font-weight: 700;
-              padding: 0.25rem 0.6rem;
-              border-radius: 6px;
-              color: #fff;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__badge--sale { background: #d94f4f; }
-            .banner-overlap-{{ section.id }} .banner-overlap__badge--new { background: #e07a3f; }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-link {
-              display: block;
-              color: inherit;
-              text-decoration: none;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-info {
-              padding: 0.9rem 1rem 1.1rem;
-              text-align: center;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-title {
-              font-size: 0.95rem;
-              margin: 0 0 0.35rem;
-              font-weight: 600;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-price {
-              margin: 0;
-              font-size: 0.9rem;
-            }
-
-            .banner-overlap-{{ section.id }} .banner-overlap__card-price s {
-              color: #999;
-              margin-left: 0.4rem;
-              font-weight: 400;
-            }
-
-            @media screen and (max-width: 749px) {
-              .banner-overlap-{{ section.id }} .banner-overlap__collection-wrap {
-                transform: translateY(calc(-1 * var(--overlap-percentage-mobile)));
-              }
-            }
-            @media screen and (max-width: 749px) {
-            #banner-overlap-{{ section.id }} .banner-overlap__heading {
-              font-size: {{ section.settings.heading_size_mobile }}px !important;
-            }
-           }
-           .banner-overlap__video{
-              position:absolute;
-              inset:0;
-              width:100%;
-              height:100%;
-              object-fit:cover;
-          }
-
-          .banner-overlap__color{
-              position:absolute;
-              inset:0;
-          }
-          .banner-overlap-{{ section.id }}.full-width {
-              display: block !important;
-              width: 100%;
-              max-width: 100%;
-          }
-
-         .page-wrapper {
-    overflow-x: hidden;
+    #Spotlight-{{ sec_id }} {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 100%;
+    }
+    #Spotlight-{{ sec_id }} .sp-link:hover,
+  #Spotlight-{{ sec_id }} .sp-link:focus-visible {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   }
-/* .banner-overlap-{{ section.id }} .banner-overlap__heading-static {
-  display: block;
-} */
+   #Spotlight-{{ sec_id }} {
+     --sp-bg: {{ s.section_bg }};
+     --sp-heading-color: {{ s.heading_color }};
+     --sp-heading-size: {{ s.heading_size }}px;
+     --sp-desc-color: {{ s.description_color }};
 
-.banner-overlap-{{ section.id }} .banner-overlap__heading-rotating {
-  display: inline-block;
-  min-height: 1em;
-  opacity: 1;
-  transition: opacity 0.25s ease;
-  white-space: normal;
+     --sp-hl-bg: {{ s.highlight_bg }};
+
+     --sp-badge-bg: {{ s.badge_bg }};
+     --sp-badge-color: {{ s.badge_color }};
+
+     --sp-btn-bg: {{ s.button_bg }};
+     --sp-btn-color: {{ s.button_color }};
+     --sp-btn-radius: {{ s.button_radius }}px;
+
+     --sp-media-h: {{ s.media_height }}px;
+     --sp-media-h-mobile: {{ media_h_mobile }}px;
+     --sp-img-radius: {{ s.image_radius }}px;
+     --sp-img-gap: {{ s.image_gap }}px;
+     --sp-half-gap: {{ img_half_gap }}px;
+     --sp-col-gap: {{ s.image_gap }}px;
+     --sp-speed: {{ s.scroll_speed }}s;
+
+     --sp-max-width: {{ s.max_width }}px;
+     --sp-pad-x: {{ s.padding_x }}px;
+     --sp-gap: {{ s.content_gap }}px;
+
+     background: var(--sp-bg);
+     color: var(--sp-heading-color);
+     overflow: hidden;
+   }
+
+   #Spotlight-{{ sec_id }},
+   #Spotlight-{{ sec_id }} * { box-sizing: border-box; }
+
+   #Spotlight-{{ sec_id }} .sp-grid {
+     max-width: var(--sp-max-width);
+     margin: 0 auto;
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     align-items: center;
+     gap: var(--sp-gap);
+   }
+
+   /* Media sits on the right by default and flips to the left via the layout
+      setting. Only the CSS `order` swaps — never the markup — so the text block
+      always comes first in the DOM for screen readers, and the mobile
+      "text above images" stacking works in both layouts for free. */
+   #Spotlight-{{ sec_id }} .sp-content {
+     order: 1;
+     padding: {{ s.padding_y }}px 0;
+     padding-inline-start: var(--sp-pad-x);
+   }
+   #Spotlight-{{ sec_id }} .sp-media { order: 2; }
+
+   #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-content {
+     order: 2;
+     padding-inline-start: 0;
+     padding-inline-end: var(--sp-pad-x);
+   }
+   #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-media { order: 1; }
+
+   /* ---------- Content ---------- */
+   #Spotlight-{{ sec_id }} .sp-inner { max-width: 560px; }
+   #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-inner { margin-left: auto; }
+
+   #Spotlight-{{ sec_id }} .sp-badge {
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+     background: var(--sp-badge-bg);
+     color: var(--sp-badge-color);
+     padding: 9px 18px;
+     border-radius: 999px;
+     font-size: 15px;
+     font-weight: 600;
+     margin-bottom: 28px;
+   }
+   #Spotlight-{{ sec_id }} .sp-badge svg {
+     width: 15px;
+     height: 15px;
+     fill: currentColor;
+     flex: 0 0 auto;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-heading {
+     margin: 0 0 22px;
+     font-size: clamp(34px, 5.4vw, var(--sp-heading-size));
+     font-weight: 800;
+     line-height: 1.08;
+     letter-spacing: -0.02em;
+     color: var(--sp-heading-color);
+   }
+
+   /* The highlighted line gets a solid block behind it. inline-block plus
+      box-decoration-break keeps that block tight to the text even if the line
+      wraps onto two rows. */
+   #Spotlight-{{ sec_id }} .sp-highlight {
+     display: inline-block;
+     background: var(--sp-hl-bg);
+     padding: 0.06em 0.22em;
+     border-radius: 2px;
+     -webkit-box-decoration-break: clone;
+     box-decoration-break: clone;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-description {
+     margin: 0 0 34px;
+     font-size: clamp(15px, 2.1vw, 18px);
+     font-weight: 500;
+     line-height: 1.55;
+     color: var(--sp-desc-color);
+   }
+   #Spotlight-{{ sec_id }} .sp-description p { margin: 0 0 0.5em; }
+   #Spotlight-{{ sec_id }} .sp-description p:last-child { margin-bottom: 0; }
+
+   /* ---------- Buttons ---------- */
+   #Spotlight-{{ sec_id }} .sp-actions {
+     display: flex;
+     align-items: center;
+     gap: 18px;
+     flex-wrap: wrap;
+   }
+   #Spotlight-{{ sec_id }} .sp-btn:hover {
+  background: #ffffff;
+  color: #000000;
+
+  transform:
+    translateY(-3px);
+
+  box-shadow: 0 14px 30px rgba(11, 29, 85, 0.24);
 }
 
-/* Cursor */
-.banner-overlap-{{ section.id }} .banner-overlap__heading-rotating::after {
-  content: "";
-  display: inline-block;
-  width: 2px;
-  height: 0.85em;
-  margin-left: 5px;
-  vertical-align: -0.05em;
-  background: currentColor;
-  animation: banner-overlap-cursor-{{ section.id }} 0.8s steps(1) infinite;
+#Spotlight-{{ sec_id }} .sp-btn:hover::before {
+  transform:
+    translateX(100%);
 }
 
-/* Cursor blinking */
-@keyframes banner-overlap-cursor-{{ section.id }} {
-  0%,
-  50% {
-    opacity: 1;
+#Spotlight-{{ sec_id }} .sp-btn:active {
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  #Spotlight-{{ sec_id }} .sp-btn,
+  #Spotlight-{{ sec_id }} .sp-btn::before {
+    transition: none;
   }
 
-  51%,
-  100% {
+}
+   #Spotlight-{{ sec_id }} .sp-btn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     background: var(--sp-btn-bg);
+     color: var(--sp-btn-color);
+     border-radius: var(--sp-btn-radius);
+     padding: 15px 28px;
+     font-size: 17px;
+     font-weight: 700;
+     text-decoration: none;
+     transition: transform 0.25s ease, opacity 0.25s ease;
+   }
+   #Spotlight-{{ sec_id }} .sp-btn:hover {
+     transform: translateY(-2px);
+     opacity: 0.92;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-link {
+     display: inline-flex;
+     align-items: center;
+     gap: 9px;
+     color: var(--sp-heading-color);
+     font-size: 17px;
+     font-weight: 700;
+     text-decoration: none;
+   }
+
+   /* Arrow starts diagonal (up-right) and straightens to horizontal on hover,
+      then eases back when the pointer leaves. */
+   #Spotlight-{{ sec_id }} .sp-link-arrow {
+     display: inline-flex;
+     transform: rotate(-45deg);
+     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+   }
+   #Spotlight-{{ sec_id }} .sp-link-arrow svg {
+     width: 17px;
+     height: 17px;
+     display: block;
+   }
+   #Spotlight-{{ sec_id }} .sp-link:hover .sp-link-arrow,
+   #Spotlight-{{ sec_id }} .sp-link:focus-visible .sp-link-arrow {
+     transform: rotate(0deg);
+   }
+
+   /* ---------- Media columns ---------- */
+   #Spotlight-{{ sec_id }} .sp-media {
+     position: relative;
+     height: var(--sp-media-h);
+     display: grid;
+     grid-template-columns: repeat({{ cols }}, 1fr);
+     gap: var(--sp-col-gap);
+     overflow: hidden;
+   }
+
+   #Spotlight-{{ sec_id }}[data-fade-edges="true"] .sp-media {
+     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+     mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+   }
+
+   #Spotlight-{{ sec_id }} .sp-col {
+     position: relative;
+     overflow: hidden;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-track {
+     display: flex;
+     flex-direction: column;
+     gap: var(--sp-img-gap);
+     will-change: transform;
+   }
+
+   #Spotlight-{{ sec_id }}[data-animate="true"] .sp-track {
+     animation-name: sp-scroll;
+     animation-duration: var(--sp-speed);
+     animation-timing-function: linear;
+     animation-iteration-count: infinite;
+   }
+
+   /* Alternating direction: "up" columns run the keyframes forward, "down"
+      columns run the same keyframes in reverse — same speed, opposite travel.
+      Each track holds two copies of its images, so scrolling exactly one
+      copy's height loops seamlessly. */
+   #Spotlight-{{ sec_id }} .sp-col[data-direction="down"] .sp-track {
+     animation-direction: reverse;
+   }
+
+   @keyframes sp-scroll {
+     from { transform: translateY(0); }
+     to { transform: translateY(calc(-50% - var(--sp-half-gap))); }
+   }
+
+   #Spotlight-{{ sec_id }}[data-pause-hover="true"] .sp-media:hover .sp-track {
+     animation-play-state: paused;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-figure {
+     margin: 0;
+     flex: 0 0 auto;
+     border-radius: var(--sp-img-radius);
+     overflow: hidden;
+     background: rgba(255,255,255,0.06);
+     aspect-ratio: {{ s.image_aspect_ratio }};
+   }
+
+   #Spotlight-{{ sec_id }} .sp-figure img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+     display: block;
+   }
+
+   #Spotlight-{{ sec_id }} .sp-figure .sp-placeholder-svg {
+     width: 100%;
+     height: 100%;
+     display: block;
+     background: rgba(255,255,255,0.08);
+   }
+
+   /* ---------- Tablet ---------- */
+   @media screen and (max-width: 989px) {
+     #Spotlight-{{ sec_id }} {
+       --sp-gap: {{ content_gap_tablet }}px;
+     }
+     #Spotlight-{{ sec_id }} .sp-heading { font-size: clamp(30px, 5vw, 44px); }
+   }
+
+   /* ---------- Mobile: stack with text first ---------- */
+   @media screen and (max-width: 990px) {
+     #Spotlight-{{ sec_id }} {
+       --sp-pad-x: 20px;
+       --sp-col-gap: {{ img_gap_mobile }}px;
+       --sp-img-gap: {{ img_gap_mobile }}px;
+       --sp-half-gap: {{ img_half_gap_mobile }}px;
+     }
+
+     #Spotlight-{{ sec_id }} .sp-grid {
+       grid-template-columns: 1fr;
+       gap: {{ content_gap_mobile }}px;
+     }
+
+     #Spotlight-{{ sec_id }} .sp-content,
+     #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-content {
+       order: 1;
+       padding: {{ pad_y_mobile }}px var(--sp-pad-x) 0;
+     }
+     #Spotlight-{{ sec_id }} .sp-media,
+     #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-media {
+       order: 2;
+       height: var(--sp-media-h-mobile);
+       padding: 0 var(--sp-pad-x) {{ pad_y_mobile }}px;
+       overflow: visible;
+     }
+     #Spotlight-{{ sec_id }} .sp-inner,
+     #Spotlight-{{ sec_id }}[data-media-position="left"] .sp-inner {
+       max-width: 100%;
+       margin-left: 0;
+     }
+
+     #Spotlight-{{ sec_id }} .sp-badge { margin-bottom: 20px; }
+     #Spotlight-{{ sec_id }} .sp-heading { margin-bottom: 16px; }
+     #Spotlight-{{ sec_id }} .sp-description { margin-bottom: 26px; }
+     #Spotlight-{{ sec_id }} .sp-actions { gap: 14px; }
+   }
+
+   @media (prefers-reduced-motion: reduce) {
+     #Spotlight-{{ sec_id }} .sp-track { animation: none !important; }
+     #Spotlight-{{ sec_id }} .sp-link-arrow,
+     #Spotlight-{{ sec_id }} .sp-btn { transition: none !important; }
+   }
+   #Spotlight-{{ sec_id }} .sp-caption {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 12px;
+    flex: 0 0 auto;
+  }
+
+  #Spotlight-{{ sec_id }} .sp-caption-avatar {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  #Spotlight-{{ sec_id }} .sp-caption-avatar img,
+  #Spotlight-{{ sec_id }} .sp-caption-placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #Spotlight-{{ sec_id }} .sp-caption-body {
+    min-width: 0;
+  }
+
+  #Spotlight-{{ sec_id }} .sp-caption-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--sp-heading-color);
+  }
+
+  #Spotlight-{{ sec_id }} .sp-caption-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--sp-desc-color);
+    opacity: 0.85;
+  }
+  #Spotlight-{{ sec_id }} .sp-media {
+    padding-right: 8%;
+  }
+
+  @media screen and (max-width: 990px) {
+    #Spotlight-{{ sec_id }} .sp-media {
+      padding-right: 0;
+    }
+  }
+  #Spotlight-{{ sec_id }} .sp-figure img {
+    transition: transform 0.4s ease;
+  }
+  #Spotlight-{{ sec_id }} .sp-media:hover .sp-figure img {
+    transform: scale(1.03);
+  }
+  #Spotlight-{{ sec_id }} .sp-caption {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  #Spotlight-{{ sec_id }} .sp-caption:hover {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    transform: translateY(-2px);
+  }
+  #Spotlight-{{ sec_id }} .sp-caption-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  #Spotlight-{{ sec_id }} .sp-caption-avatar {
+    border-radius: calc(var(--sp-img-radius) * 0.6);
+  }
+  #Spotlight-{{ sec_id }} .sp-figure,
+  #Spotlight-{{ sec_id }} .sp-caption {
     opacity: 0;
+    animation: sp-fade-in 0.6s ease forwards;
   }
-}
-/* Fade sentence before next one */
-.banner-overlap-{{ section.id }} .banner-overlap__heading-rotating.is-hiding {
-  opacity: 0;
-}
-
-/* Hidden source text */
-.banner-overlap-{{ section.id }} .banner-overlap__rotating-source {
-  display: none !important;
-}
+  @keyframes sp-fade-in {
+    to { opacity: 1; }
+  }
+  #Spotlight-{{ sec_id }} .sp-figure {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .sp-media {
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.10),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+  }
 {%- endstyle -%}
 
 <div
-  id="banner-overlap-{{ section.id }}"
-  class="
-    banner-overlap-{{ section.id }}
-    section
-    {% if section.settings.section_width == 'page' %}
-      page-width
-    {% else %}
-      full-width
-    {% endif %}
-  "
+  id="Spotlight-{{ sec_id }}"
+  data-media-position="{{ s.media_position }}"
+  data-animate="{{ s.enable_scroll }}"
+  data-pause-hover="{{ s.pause_on_hover }}"
+  data-fade-edges="{{ s.fade_edges }}"
 >
-  {% comment %} Image banner with text overlay {% endcomment %}
-  <div class="banner-overlap__image-wrap">
-    {% case section.settings.background_type %}
-      {% when 'image' %}
-        {% if section.settings.image != blank %}
-          {{
-            section.settings.image
-            | image_url: width: 2400
-            | image_tag: class: 'banner-overlap__image', loading: 'lazy', widths: '750,1100,1500,2000,2400'
-          }}
-        {% endif %}
-
-      {% when 'video' %}
-        {% if section.settings.video != blank %}
-          {{
-            section.settings.video
-            | video_tag:
-              autoplay: true,
-              loop: true,
-              muted: true,
-              controls: false,
-              playsinline: true,
-              class: 'banner-overlap__video'
-          }}
-        {% endif %}
-
-      {% when 'color' %}
-        <div
-          class="banner-overlap__color"
-          style="background: {{ section.settings.background_color }};"
-        ></div>
-    {% endcase %}
-
-    <div class="banner-overlap__overlay"></div>
-
-    <div class="banner-overlap__content banner-overlap__content--{{ section.settings.content_position }}">
-      {%- if section.settings.caption != blank -%}
-        <p class="banner-overlap__caption">{{ section.settings.caption }}</p>
-      {%- endif -%}
-
-      {%- if section.settings.heading != blank or section.settings.rotating_texts != blank -%}
-      <h2
-        class="banner-overlap__heading"
-        style="
-          color: {{ section.settings.heading_color }};
-          font-size: {{ section.settings.heading_size }}px;
-          font-weight: {{ section.settings.heading_weight }};
-          line-height: {{ section.settings.heading_line_height }};
-          letter-spacing: {{ section.settings.heading_letter_spacing }}px;
-        "
-      >
-
-    {%- if section.settings.heading != blank -%}
-      <span class="banner-overlap__heading-static">
-        {{ section.settings.heading }}
-      </span>
+  <div class="sp-grid">
+    <div class="sp-content">
+      <div class="sp-inner">
+        {%- if s.badge_text != blank -%}
+          <div class="sp-badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span>{{ s.badge_text }}</span>
+          </div>
         {%- endif -%}
 
-        {%- if section.settings.rotating_texts != blank -%}
-
-          <span
-            class="banner-overlap__heading-rotating"
-            style="color: {{ section.settings.rotating_color }};"
-            data-speed="{{ section.settings.typewriter_speed }}"
-            data-pause="{{ section.settings.typewriter_pause }}"
-            aria-live="polite"
-          ></span>
-
-          <span
-            class="banner-overlap__rotating-source"
-            hidden
-          >
-            {{ section.settings.rotating_texts | escape }}
-          </span>
-
-        {%- endif -%}
-
-      </h2>
-      {%- endif -%}
-
-      {%- if section.settings.text != blank -%}
-        <div class="banner-overlap__text">{{ section.settings.text }}</div>
-      {%- endif -%}
-
-      {%- if section.settings.button_label != blank -%}
-        <a
-          href="{{ section.settings.button_link | default: '#' }}"
-          class="banner-overlap__button"
-          {% if section.settings.open_new_tab %}
-            target="_blank"
-          {% endif %}
-        >
-          {{ section.settings.button_label }}
-          <span class="banner-overlap__button-icon">&#8250;</span>
-        </a>
-      {%- endif -%}
-    </div>
-  </div>
-
-  {% comment %} Featured collection, pulled up over the bottom of the image {% endcomment %}
-  <div
-    class="banner-overlap__collection-wrap"
-    style="--overlap-percentage: {{ section.settings.overlap_percentage }}%; --overlap-percentage-mobile: {{ section.settings.overlap_percentage_mobile }}%;"
-  >
-    <div class="banner-overlap__carousel">
-      <div class="banner-overlap__carousel-nav">
-        <button type="button" class="banner-overlap__carousel-button" data-carousel-prev aria-label="Previous products">
-          &#8249;
-        </button>
-        <button type="button" class="banner-overlap__carousel-button" data-carousel-next aria-label="Next products">
-          &#8250;
-        </button>
-      </div>
-      <ul
-        class="banner-overlap__grid"
-        data-carousel-track
-        style="--columns-desktop: {{ section.settings.columns_desktop }}; --columns-mobile: {{ section.settings.columns_mobile }};"
-      >
-        {%- if section.blocks.size > 0 -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'gallery_image' -%}
-              <li class="banner-overlap__card" {{ block.shopify_attributes }}>
-                {%- if block.settings.link != blank -%}
-                  <a href="{{ block.settings.link }}" class="banner-overlap__card-link">
-                {%- endif -%}
-                <div class="banner-overlap__card-media" data-hover-media>
-                  {%- if block.settings.badge_text != blank -%}
-                    <span class="banner-overlap__badge banner-overlap__badge--sale">
-                      {{- block.settings.badge_text -}}
-                    </span>
-                  {%- endif -%}
-
-                  {%- if block.settings.image != blank -%}
-                    {{
-                      block.settings.image
-                      | image_url: width: 700
-                      | image_tag: class: 'banner-overlap__card-image--front', widths: '350, 500, 700', loading: 'lazy'
-                    }}
-                  {%- else -%}
-                    {{ 'product-1' | placeholder_svg_tag: 'banner-overlap__card-image--front' }}
-                  {%- endif -%}
-                </div>
-
-                {%- if block.settings.title != blank or block.settings.subtitle != blank -%}
-                  <div class="banner-overlap__card-info">
-                    {%- if block.settings.title != blank -%}
-                      <p class="banner-overlap__card-title">{{ block.settings.title }}</p>
-                    {%- endif -%}
-                    {%- if block.settings.subtitle != blank -%}
-                      <p class="banner-overlap__card-price">{{ block.settings.subtitle }}</p>
-                    {%- endif -%}
-                  </div>
-                {%- endif -%}
-                {%- if block.settings.link != blank -%}
-                  </a>
-                {%- endif -%}
-              </li>
+        {%- if s.heading != blank or s.heading_highlight != blank -%}
+          <h2 class="sp-heading">
+            {%- if s.heading != blank -%}{{ s.heading }}{%- endif -%}
+            {%- if s.heading_highlight != blank -%}
+              {%- if s.heading != blank -%}<br>{%- endif -%}
+              <span class="sp-highlight">{{ s.heading_highlight }}</span>
             {%- endif -%}
-          {%- endfor -%}
-        {%- else -%}
-          {%- for i in (1..4) -%}
-            <li class="banner-overlap__card banner-overlap__card--placeholder">
-              <div class="banner-overlap__card-media">
-                {{ 'product-' | append: i | placeholder_svg_tag: 'banner-overlap__card-image--front' }}
-              </div>
-              <div class="banner-overlap__card-info">
-                <h3 class="banner-overlap__card-title">Image title</h3>
-              </div>
-            </li>
-          {%- endfor -%}
+          </h2>
         {%- endif -%}
-      </ul>
+
+        {%- if s.description != blank -%}
+          <div class="sp-description">{{ s.description }}</div>
+        {%- endif -%}
+
+        {%- if s.button_label != blank or s.link_label != blank -%}
+          <div class="sp-actions">
+            {%- if s.button_label != blank -%}
+              <a class="sp-btn" href="{{ s.button_link | default: '#' }}">{{ s.button_label }}</a>
+            {%- endif -%}
+            {%- if s.link_label != blank -%}
+              <a class="sp-link" href="{{ s.link_link | default: '#' }}">
+                <span>{{ s.link_label }}</span>
+                <span class="sp-link-arrow" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </span>
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="sp-media">
+      {%- comment -%}
+        Images are distributed across the columns round-robin (image 1 to col 1,
+        image 2 to col 2, image 3 to col 1 and so on), so a merchant just adds
+        image blocks and they spread out evenly without picking a column each
+        time.
+      {%- endcomment -%}
+      {%- for col in (1..cols) -%}
+        {%- liquid
+          assign col_index = col | minus: 1
+          assign dir = 'up'
+          assign parity = col_index | modulo: 2
+          if s.first_column_direction == 'down'
+            if parity == 0
+              assign dir = 'down'
+            endif
+          else
+            if parity == 1
+              assign dir = 'down'
+            endif
+          endif
+        -%}
+        <div class="sp-col" data-direction="{{ dir }}">
+          <div class="sp-track">
+            {%- comment -%} Two passes give the seamless vertical loop. {%- endcomment -%}
+            {%- for pass in (1..2) -%}
+              {%- if img_count > 0 -%}
+                {%- for block in section.blocks -%}
+                  {%- assign slot = forloop.index0 | modulo: cols -%}
+                  {%- if slot == col_index -%}
+                    {%- if block.settings.image != blank -%}
+                      <figure
+                        class="sp-figure"
+                        {% if pass == 1 %}
+                          {{- block.shopify_attributes -}}
+                        {% else %}
+                          aria-hidden="true"
+                        {% endif %}
+                      >
+                        <img
+                          src="{{ block.settings.image | image_url: width: 800 }}"
+                          srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 800 }} 800w"
+                          sizes="(max-width: 749px) 45vw, 25vw"
+                          alt="{{ block.settings.image.alt | escape }}"
+                          loading="lazy"
+                          width="{{ block.settings.image.width }}"
+                          height="{{ block.settings.image.height }}"
+                        >
+                      </figure>
+                    {%- endif -%}
+
+                    {%- if block.settings.show_caption and block.settings.image != blank -%}
+                      <div
+                        class="sp-caption"
+                        style="background-color: #fff;"
+                        {% if pass == 1 %}
+                          {{- block.shopify_attributes -}}
+                        {% else %}
+                          aria-hidden="true"
+                        {% endif %}
+                      >
+                        <div class="sp-caption-avatar">
+                          {%- if block.settings.avatar_image != blank -%}
+                            <img
+                              src="{{ block.settings.avatar_image | image_url: width: 120 }}"
+                              alt=""
+                              loading="lazy"
+                              width="{{ block.settings.avatar_image.width }}"
+                              height="{{ block.settings.avatar_image.height }}"
+                            >
+                          {%- else -%}
+                            {{ 'lifestyle-1' | placeholder_svg_tag: 'sp-caption-placeholder-svg' }}
+                          {%- endif -%}
+                        </div>
+                        <div class="sp-caption-body">
+                          {%- if block.settings.caption_title != blank -%}
+                            <p class="sp-caption-title">{{ block.settings.caption_title }}</p>
+                          {%- endif -%}
+                          {%- if block.settings.caption_text != blank -%}
+                            <p class="sp-caption-text">{{ block.settings.caption_text }}</p>
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- else -%}
+                {%- comment -%} No blocks yet: show placeholders so the layout is visible in the editor. {%- endcomment -%}
+                {%- for i in (1..3) -%}
+                  <figure
+                    class="sp-figure"
+                    {% if pass == 2 %}
+                      aria-hidden="true"
+                    {% endif %}
+                  >
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'sp-placeholder-svg' }}
+                  </figure>
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
     </div>
   </div>
 </div>
-<script>
-  function initBannerOverlapTypewriter(section) {
-    if (!section) return;
-
-    var rotatingEl = section.querySelector(
-      '.banner-overlap__heading-rotating'
-    );
-
-    var sourceEl = section.querySelector(
-      '.banner-overlap__rotating-source'
-    );
-
-    if (!rotatingEl || !sourceEl) return;
-
-    /* Prevent duplicate initialization */
-    if (rotatingEl.dataset.typewriterInitialized === 'true') {
-      return;
-    }
-
-    rotatingEl.dataset.typewriterInitialized = 'true';
-
-    /* -----------------------------------------
-       Get sentences
-       One sentence per line in Theme Editor
-       ----------------------------------------- */
-
-    var words = sourceEl.textContent
-      .split(/\r?\n/)
-      .map(function (word) {
-        return word.trim();
-      })
-      .filter(function (word) {
-        return word.length > 0;
-      });
-
-    if (!words.length) return;
-
-    /* -----------------------------------------
-       Settings
-       ----------------------------------------- */
-
-    var typingSpeed =
-      parseInt(rotatingEl.dataset.speed, 10) || 70;
-
-    var pauseDuration =
-      parseInt(rotatingEl.dataset.pause, 10) || 2000;
-
-    var wordIndex = 0;
-
-    /* -----------------------------------------
-       Type one sentence
-       ----------------------------------------- */
-
-    function typeSentence(sentence, callback) {
-      var characterIndex = 0;
-
-      rotatingEl.classList.remove('is-hiding');
-      rotatingEl.textContent = '';
-
-      function typeNextCharacter() {
-        if (characterIndex < sentence.length) {
-          rotatingEl.textContent += sentence.charAt(characterIndex);
-
-          characterIndex++;
-
-          window.setTimeout(
-            typeNextCharacter,
-            typingSpeed
-          );
-        } else {
-          /*
-           * Sentence is completely typed.
-           * Keep it visible for pauseDuration.
-           */
-          window.setTimeout(function () {
-            hideSentence(callback);
-          }, pauseDuration);
-        }
-      }
-
-      typeNextCharacter();
-    }
-
-    /* -----------------------------------------
-       Hide complete sentence
-       ----------------------------------------- */
-
-    function hideSentence(callback) {
-      rotatingEl.classList.add('is-hiding');
-
-      window.setTimeout(function () {
-        rotatingEl.textContent = '';
-        rotatingEl.classList.remove('is-hiding');
-
-        callback();
-      }, 300);
-    }
-
-    /* -----------------------------------------
-       Start next sentence
-       ----------------------------------------- */
-
-    function showNextSentence() {
-      var currentSentence = words[wordIndex];
-
-      wordIndex++;
-
-      if (wordIndex >= words.length) {
-        wordIndex = 0;
-      }
-
-      typeSentence(
-        currentSentence,
-        showNextSentence
-      );
-    }
-
-    /* Start */
-    showNextSentence();
-  }
-
-
-  /* =========================================
-     INITIALIZE BANNER
-     ========================================= */
-
-  function initializeBannerOverlapTypewriters() {
-    document
-      .querySelectorAll('[id^="banner-overlap-"]')
-      .forEach(function (section) {
-        initBannerOverlapTypewriter(section);
-      });
-  }
-
-
-  /* Normal page load */
-  if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      initializeBannerOverlapTypewriters
-    );
-  } else {
-    initializeBannerOverlapTypewriters();
-  }
-
-
-  /* =========================================
-     SHOPIFY THEME EDITOR SUPPORT
-     ========================================= */
-
-  document.addEventListener(
-    'shopify:section:load',
-    function (event) {
-      var section = event.target;
-
-      if (
-        section &&
-        section.id &&
-        section.id.indexOf('shopify-section-') === 0
-      ) {
-        initBannerOverlapTypewriter(section);
-      }
-    }
-  );
-</script>
-<script>
-  (function () {
-    var section = document.getElementById('banner-overlap-{{ section.id }}');
-    if (!section) return;
-    initBannerOverlapTypewriter(section)
-    /* ---------- Carousel ---------- */
-    var track = section.querySelector('[data-carousel-track]');
-    var prevBtn = section.querySelector('[data-carousel-prev]');
-    var nextBtn = section.querySelector('[data-carousel-next]');
-
-    if (track) {
-      var scrollByCard = function (direction) {
-        var card = track.querySelector('.banner-overlap__card');
-        if (!card) return;
-        var gap = parseFloat(getComputedStyle(track).gap) || 0;
-        var amount = card.getBoundingClientRect().width + gap;
-        track.scrollBy({ left: amount * direction, behavior: 'smooth' });
-      };
-
-      var updateButtonState = function () {
-        var maxScroll = track.scrollWidth - track.clientWidth - 1;
-        if (prevBtn) prevBtn.disabled = track.scrollLeft <= 0;
-        if (nextBtn) nextBtn.disabled = track.scrollLeft >= maxScroll;
-      };
-
-      if (prevBtn)
-        prevBtn.addEventListener('click', function () {
-          scrollByCard(-1);
-        });
-      if (nextBtn)
-        nextBtn.addEventListener('click', function () {
-          scrollByCard(1);
-        });
-      track.addEventListener('scroll', updateButtonState);
-      window.addEventListener('resize', updateButtonState);
-      updateButtonState();
-    }
-
-    /* ---------- Premium hover image transition (JS-driven) ---------- */
-    function easeInOutCubic(t) {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
-    function runAnimation(state, targetProgress, duration) {
-      if (state.raf) cancelAnimationFrame(state.raf);
-      var startProgress = state.progress;
-      var startTime = null;
-
-      function step(timestamp) {
-        if (startTime === null) startTime = timestamp;
-        var elapsed = timestamp - startTime;
-        var t = Math.min(elapsed / duration, 1);
-        var eased = easeInOutCubic(t);
-        state.progress = startProgress + (targetProgress - startProgress) * eased;
-        state.render(state.progress);
-
-        if (t < 1) {
-          state.raf = requestAnimationFrame(step);
-        } else {
-          state.progress = targetProgress;
-          state.render(state.progress);
-          state.raf = null;
-        }
-      }
-      state.raf = requestAnimationFrame(step);
-    }
-
-    var mediaEls = section.querySelectorAll('[data-hover-media]');
-
-    mediaEls.forEach(function (media) {
-      var isFlippable = media.classList.contains('banner-overlap__card-media--flippable');
-      var front = media.querySelector('.banner-overlap__card-image--front');
-      var back = media.querySelector('.banner-overlap__card-image--back');
-      var card = media.closest('.banner-overlap__card');
-      if (!card || !front) return;
-
-      var state = { progress: 0, raf: null };
-      var DIAGONAL_SPREAD = 18; // controls the slant of the wipe line
-
-      state.render = function (p) {
-        if (isFlippable && back) {
-          // p: 0 = front fully visible, 1 = front fully wiped away
-          var yLeft = Math.max(0, Math.min(100, p * (100 + DIAGONAL_SPREAD)));
-          var yRight = Math.max(0, Math.min(100, p * (100 + DIAGONAL_SPREAD) - DIAGONAL_SPREAD));
-
-          front.style.clipPath = 'polygon(0% ' + yLeft + '%, 100% ' + yRight + '%, 100% 100%, 0% 100%)';
-
-          var frontScale = 1 + p * 0.05;
-          front.style.transform = 'scale(' + frontScale + ')';
-
-          var backScale = 1.08 - p * 0.08;
-          back.style.transform = 'scale(' + backScale + ')';
-        } else {
-          var scale = 1 + p * 0.08;
-          front.style.transform = 'scale(' + scale + ')';
-        }
-      };
-
-      card.addEventListener('mouseenter', function () {
-        runAnimation(state, 1, 650);
-      });
-
-      card.addEventListener('mouseleave', function () {
-        runAnimation(state, 0, 550);
-      });
-
-      state.render(0);
-    });
-  })();
-</script>
 
 {% schema %}
 {
-  "name": "Image overlap Banner",
+  "name": "Text with Images",
   "tag": "section",
-  "class": "section",
+  "class": "section section--spotlight",
   "settings": [
+    { "type": "header", "content": "Layout" },
     {
       "type": "select",
-      "id": "section_width",
-      "label": "Section width",
+      "id": "media_position",
+      "label": "Image position",
+      "info": "Switches which side the image columns appear on. On mobile the text always sits above the images.",
       "options": [
-        {
-          "value": "page",
-          "label": "Page width"
-        },
-        {
-          "value": "full",
-          "label": "Full width"
-        }
+        { "value": "right", "label": "Images right, text left" },
+        { "value": "left", "label": "Images left, text right" }
       ],
-      "default": "page"
+      "default": "right"
     },
     {
-      "type": "header",
-      "content": "Background"
+      "type": "range",
+      "id": "max_width",
+      "label": "Section max width",
+      "min": 1000,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 1600
     },
     {
-      "type": "select",
-      "id": "background_type",
-      "label": "Background Type",
-      "options": [
-        {
-          "value": "image",
-          "label": "Image"
-        },
-        {
-          "value": "video",
-          "label": "Video"
-        },
-        {
-          "value": "color",
-          "label": "Solid Color"
-        }
-      ],
-      "default": "image"
+      "type": "range",
+      "id": "content_gap",
+      "label": "Gap between text and images",
+      "info": "Reduced automatically on tablet and mobile.",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 60
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Background Image"
+      "type": "range",
+      "id": "padding_x",
+      "label": "Text side padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
     },
     {
-      "type": "video",
-      "id": "video",
-      "label": "Background Video"
+      "type": "range",
+      "id": "padding_y",
+      "label": "Top and bottom padding",
+      "info": "Reduced automatically on mobile.",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    { "type": "header", "content": "Badge" },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "info": "Leave blank to hide the badge.",
+      "default": "5.00 from 144+ reviews"
     },
     {
       "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#f5f5f5"
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#1e2b45"
     },
     {
-      "type": "range",
-      "id": "image_height",
-      "min": 300,
-      "max": 900,
-      "step": 20,
-      "unit": "px",
-      "label": "Banner height (desktop)",
-      "default": 620
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge text and star color",
+      "default": "#ffffff"
     },
+    { "type": "header", "content": "Heading and text" },
     {
-      "type": "range",
-      "id": "image_height_mobile",
-      "min": 300,
-      "max": 700,
-      "step": 20,
-      "unit": "px",
-      "label": "Banner height (mobile)",
-      "default": 480
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "min": 0,
-      "max": 80,
-      "step": 5,
-      "unit": "%",
-      "label": "Image overlay opacity",
-      "default": 0
-    },
-    {
-      "type": "header",
-      "content": "Content"
-    },
-    {
-      "type": "select",
-      "id": "content_position",
-      "label": "Content position",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
-      ],
-      "default": "left"
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Prioritize Safety and Ethics in Your"
     },
     {
       "type": "text",
-      "id": "caption",
-      "label": "Caption"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Goodness in Every Bite"
-    },
-    {
-      "type": "textarea",
-      "id": "rotating_texts",
-      "label": "Rotating heading text",
-      "info": "Enter one sentence or phrase per line.",
-      "default": "High Converting Stores\nBetter Shopify Experiences\nPremium Store Design"
-    },
-    {
-      "type": "range",
-      "id": "typewriter_speed",
-      "min": 20,
-      "max": 200,
-      "step": 10,
-      "unit": "ms",
-      "label": "Typing speed",
-      "default": 70
-    },
-    {
-      "type": "range",
-      "id": "typewriter_pause",
-      "min": 500,
-      "max": 5000,
-      "step": 250,
-      "unit": "ms",
-      "label": "Pause after sentence",
-      "default": 2000
-    },
-    {
-      "type": "color",
-      "id": "rotating_color",
-      "label": "Rotating text color",
-      "default": "#7DD3FC"
-    },
-    {
-      "type": "header",
-      "content": "Heading Style"
-    },
-    {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Heading Color",
-      "default": "#ffffff"
+      "id": "heading_highlight",
+      "label": "Highlighted line",
+      "info": "Rendered on its own line with a solid background behind it.",
+      "default": "Services Spotlight"
     },
     {
       "type": "range",
       "id": "heading_size",
-      "min": 20,
-      "max": 80,
+      "label": "Heading size",
+      "info": "Scales down automatically on smaller screens.",
+      "min": 30,
+      "max": 90,
       "step": 2,
       "unit": "px",
-      "label": "Heading Size (Desktop)",
-      "default": 56
+      "default": 62
     },
     {
-      "type": "range",
-      "id": "heading_size_mobile",
-      "min": 16,
-      "max": 48,
-      "step": 2,
-      "unit": "px",
-      "label": "Heading Size (Mobile)",
-      "default": 32
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading, link and base text color",
+      "default": "#ffffff"
     },
     {
-      "type": "range",
-      "id": "heading_weight",
-      "min": 300,
-      "max": 900,
-      "step": 100,
-      "label": "Heading Weight",
-      "default": 700
-    },
-    {
-      "type": "range",
-      "id": "heading_line_height",
-      "min": 0.8,
-      "max": 2,
-      "step": 0.1,
-      "label": "Heading Line Height",
-      "default": 1.1
-    },
-    {
-      "type": "range",
-      "id": "heading_letter_spacing",
-      "min": -2,
-      "max": 10,
-      "step": 0.5,
-      "unit": "px",
-      "label": "Heading Letter Spacing",
-      "default": 0
+      "type": "color",
+      "id": "highlight_bg",
+      "label": "Highlight background",
+      "default": "#3730a3"
     },
     {
       "type": "richtext",
-      "id": "text",
-      "label": "Text",
-      "default": "<p>Nourish your body and delight your taste buds.</p>"
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Expert guidance to conquer any challenge that comes your way.</p>"
     },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#ffffff"
+    },
+    { "type": "header", "content": "Buttons" },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button label",
-      "default": "Shop Now"
+      "label": "Primary button label",
+      "default": "Shop All"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link"
-    },
-    {
-      "type": "checkbox",
-      "id": "open_new_tab",
-      "label": "Open link in new tab",
-      "default": false
+      "label": "Primary button link"
     },
     {
       "type": "color",
-      "id": "text_color",
-      "label": "Text color",
+      "id": "button_bg",
+      "label": "Primary button background",
+      "default": "#4f39f6"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Primary button text color",
       "default": "#ffffff"
     },
-    {
-      "type": "color",
-      "id": "button_background",
-      "label": "Button background",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "button_text_color",
-      "label": "Button text color",
-      "default": "#111111"
-    },
-    {
-      "type": "header",
-      "content": "Image Gallery"
-    },
-
     {
       "type": "range",
-      "id": "columns_desktop",
-      "min": 2,
-      "max": 5,
-      "step": 1,
-      "default": 4,
-      "label": "Columns (desktop)"
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 40
     },
     {
+      "type": "text",
+      "id": "link_label",
+      "label": "Secondary link label",
+      "info": "Its arrow rotates from diagonal to horizontal on hover.",
+      "default": "Explore Features"
+    },
+    {
+      "type": "url",
+      "id": "link_link",
+      "label": "Secondary link URL"
+    },
+    { "type": "header", "content": "Image columns" },
+    {
       "type": "select",
-      "id": "columns_mobile",
-      "label": "Columns (mobile)",
+      "id": "columns",
+      "label": "Number of columns",
       "options": [
         { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
       ],
       "default": "2"
     },
     {
-      "type": "range",
-      "id": "overlap_percentage",
-      "min": 0,
-      "max": 60,
-      "step": 5,
-      "unit": "%",
-      "label": "Overlap onto banner (desktop)",
-      "info": "How much of the collection grid sits on top of the image, e.g. 30% overlaps the image and 70% sits below it.",
-      "default": 30
+      "type": "select",
+      "id": "first_column_direction",
+      "label": "First column scrolls",
+      "info": "Columns alternate direction from here.",
+      "options": [
+        { "value": "up", "label": "Up" },
+        { "value": "down", "label": "Down" }
+      ],
+      "default": "up"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll",
+      "label": "Animate columns",
+      "default": true
     },
     {
       "type": "range",
-      "id": "overlap_percentage_mobile",
+      "id": "scroll_speed",
+      "label": "Scroll duration",
+      "info": "Higher is slower.",
+      "min": 10,
+      "max": 120,
+      "step": 2,
+      "unit": "s",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "fade_edges",
+      "label": "Fade top and bottom edges",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "media_height",
+      "label": "Image area height",
+      "info": "Reduced automatically on mobile.",
+      "min": 400,
+      "max": 1100,
+      "step": 10,
+      "unit": "px",
+      "default": 760
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1/1", "label": "Square" },
+        { "value": "4/3", "label": "Landscape" },
+        { "value": "3/4", "label": "Portrait" },
+        { "value": "16/10", "label": "Wide" }
+      ],
+      "default": "4/3"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius",
       "min": 0,
       "max": 40,
-      "step": 5,
-      "unit": "%",
-      "label": "Overlap onto banner (mobile)",
-      "default": 15
+      "step": 2,
+      "unit": "px",
+      "default": 14
     },
+    {
+      "type": "range",
+      "id": "image_gap",
+      "label": "Gap between images",
+      "info": "Applies both vertically and between columns.",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    { "type": "header", "content": "Section background" },
     {
       "type": "color",
-      "id": "card_background",
-      "label": "Card background",
-      "default": "#ffffff"
-    },
-    {
-      "type": "header",
-      "content": "Section"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Padding top",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Padding bottom",
-      "default": 60
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#0b1628"
     }
   ],
   "blocks": [
     {
-      "type": "gallery_image",
+      "type": "image",
       "name": "Image",
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "Image",
+          "info": "Images are spread across the columns automatically in the order you add them."
+        },
+        { "type": "header", "content": "Result caption card" },
+        {
+          "type": "checkbox",
+          "id": "show_caption",
+          "label": "Show caption card below this image",
+          "default": false
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar_image",
+          "label": "Avatar / thumbnail image"
         },
         {
           "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "Image title"
+          "id": "caption_title",
+          "label": "Brand / title",
+          "default": "Brand Name"
         },
         {
           "type": "text",
-          "id": "subtitle",
-          "label": "Subtitle (optional)"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link (optional)"
-        },
-        {
-          "type": "text",
-          "id": "badge_text",
-          "label": "Badge text (optional)"
+          "id": "caption_text",
+          "label": "Result / description",
+          "default": "Short result or description goes here."
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Image overlap collection"
+      "name": "Text with Images",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
     }
   ]
 }
