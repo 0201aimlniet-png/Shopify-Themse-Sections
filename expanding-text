@@ -1,0 +1,1695 @@
+{%- liquid
+  assign section_id = 'expanding-gallery-' | append: section.id
+-%}
+
+{%- style -%}
+
+  /* =========================================================
+     SECTION VARIABLES
+  ========================================================= */
+
+  #{{ section_id }} {
+    --eg-gap: {{ section.settings.gap }}px;
+    --eg-radius: {{ section.settings.radius }}px;
+
+    --eg-height: {{ section.settings.height_desktop }}px;
+
+    --eg-active-flex: {{ section.settings.active_flex }};
+    --eg-collapsed-flex: {{ section.settings.collapsed_flex }};
+
+    --eg-section-bg: {{ section.settings.section_background }};
+
+    --eg-overlay: {{ section.settings.overlay_color }};
+    --eg-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+
+    --eg-content-bg: linear-gradient(
+        {{ section.settings.content_gradient_direction }},
+        {{ section.settings.content_gradient_start }},
+        {{ section.settings.content_gradient_end }}
+      );
+
+    --eg-heading-color: {{ section.settings.heading_color }};
+    --eg-description-color: {{ section.settings.description_color }};
+    --eg-tagline-color: {{ section.settings.tagline_color }};
+
+    /* Normal card heading area */
+    --eg-default-content-height: 70px;
+
+    --eg-transition:
+      {{ section.settings.animation_duration }}ms
+      cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--eg-section-bg);
+    width: 100%;
+    padding-top:{{ section.settings.padding_top_desktop }}px;
+    padding-bottom:
+      {{ section.settings.padding_bottom_desktop }}px;
+  }
+
+
+  /* =========================================================
+     SECTION CONTAINER
+  ========================================================= */
+
+  #{{ section_id }} .eg__container {
+    width: 100%;
+
+    max-width:
+      {{ section.settings.max_width }}px;
+
+    margin: 0 auto;
+
+    padding: 0 24px;
+  }
+
+
+  /* =========================================================
+     SECTION HEADER
+  ========================================================= */
+
+  #{{ section_id }} .eg__header {
+    text-align:
+      {{ section.settings.heading_alignment }};
+
+    margin-bottom:
+      {{ section.settings.heading_spacing }}px;
+  }
+
+
+  #{{ section_id }} .eg__eyebrow {
+    margin: 0 0 10px;
+
+    color:
+      {{ section.settings.eyebrow_color }};
+
+    font-size:
+      {{ section.settings.eyebrow_size }}px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+  }
+
+
+  #{{ section_id }} .eg__heading {
+    margin: 0;
+
+    color:
+      {{ section.settings.section_heading_color }};
+
+    font-size:
+      {{ section.settings.section_heading_size }}px;
+
+    line-height: 1.1;
+
+    font-weight: 700;
+  }
+
+
+  #{{ section_id }} .eg__subheading {
+    max-width: 700px;
+
+    margin: 14px auto 0;
+
+    color:
+      {{ section.settings.section_description_color }};
+
+    font-size:
+      {{ section.settings.section_description_size }}px;
+
+    line-height: 1.6;
+  }
+
+
+  #{{ section_id }} .eg__header[data-align="left"]
+  .eg__subheading {
+    margin-left: 0;
+  }
+
+
+  /* =========================================================
+     GALLERY
+  ========================================================= */
+
+  #{{ section_id }} .eg__gallery {
+    display: flex;
+
+    align-items: stretch;
+
+    width: 100%;
+
+    gap: var(--eg-gap);
+
+    min-width: 0;
+  }
+
+
+  /* =========================================================
+     PANEL
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel {
+    position: relative;
+    display: block;
+    flex: var(--eg-collapsed-flex)10%;
+    min-width: 0;
+    height: var(--eg-height);
+    overflow: hidden;
+    border-radius: var(--eg-radius);
+    /*
+      Individual card background.
+      Set from block schema using:
+      --eg-card-bg
+    */
+    background: var(--eg-card-bg, #102A72);
+    cursor: pointer;
+    isolation: isolate;
+    transition:
+      flex var(--eg-transition),
+      border-radius var(--eg-transition),
+      box-shadow var(--eg-transition);
+  }
+
+
+  /* =========================================================
+     ACTIVE / EXPANDED PANEL
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel.is-active {
+    flex-grow:
+      var(--eg-active-flex);
+
+    box-shadow:
+      0 18px 45px rgba(0, 0, 0, 0.14),
+      0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+
+
+  /* =========================================================
+     NORMAL STATE CONTENT
+     
+     HEADING ONLY
+  ========================================================= */
+
+  #{{ section_id }} .eg__default-content {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    z-index: 5;
+
+    width: 100%;
+
+    /*
+      Only heading area.
+    */
+    height:
+      var(--eg-default-content-height);
+
+    padding:
+      24px 24px 14px;
+
+    background:
+      var(--eg-card-bg, #102A72);
+
+    color: #ffffff;
+
+    pointer-events: none;
+
+    transition:
+      opacity 280ms ease,
+      transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+
+  /* =========================================================
+     NORMAL HEADING
+  ========================================================= */
+
+  #{{ section_id }} .eg__default-heading {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size:
+      {{ section.settings.label_size }}px;
+
+    font-weight: 700;
+
+    line-height: 1.15;
+
+    text-wrap: balance;
+  }
+
+
+  /* =========================================================
+     HIDE DESCRIPTION IN NORMAL STATE
+  ========================================================= */
+
+  #{{ section_id }} .eg__default-description {
+    display: none;
+  }
+
+
+  /* =========================================================
+     NORMAL IMAGE
+     
+     Image begins BELOW the heading.
+  ========================================================= */
+
+  #{{ section_id }} .eg__media {
+    position: absolute;
+
+    top:
+      var(--eg-default-content-height);
+
+    right: 0;
+
+    bottom: 0;
+
+    left: 0;
+
+    z-index: 1;
+
+    overflow: hidden;
+
+    background:
+      var(--eg-card-bg, #102A72);
+
+    transition:
+      opacity 300ms ease;
+  }
+
+
+  /* =========================================================
+     NORMAL IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .eg__image,
+  #{{ section_id }} .eg__placeholder {
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transform:
+      scale(1);
+
+    transition:
+      transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+
+  /* =========================================================
+     IMAGE HOVER ZOOM
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel:hover
+  .eg__image {
+    transform:
+      scale(1.025);
+  }
+
+
+  /* =========================================================
+     IMAGE OVERLAY
+     
+     Only covers image area.
+     Does NOT cover heading.
+  ========================================================= */
+
+  #{{ section_id }} .eg__overlay {
+    position: absolute;
+
+    top:
+      var(--eg-default-content-height);
+
+    right: 0;
+
+    bottom: 0;
+
+    left: 0;
+    z-index: 2;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.02) 0%,
+        rgba(0, 0, 0, 0.08) 45%,
+        rgba(0, 0, 0, 0.28) 100%
+      );
+    opacity: 1;
+    pointer-events: none;
+    transition:
+      opacity var(--eg-transition);
+  }
+
+
+  /* =========================================================
+     HIDE NORMAL CONTENT WHEN ACTIVE
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__default-content {
+    opacity: 0;
+    transform:
+      translateY(-12px);
+  }
+
+  /* =========================================================
+     HIDE NORMAL IMAGE WHEN ACTIVE
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__media {
+    opacity: 0;
+  }
+  #{{ section_id }} .eg__panel.is-active
+  .eg__overlay {
+    opacity: 0;
+  }
+  /* =========================================================
+     EXPANDED CONTENT WRAPPER
+  ========================================================= */
+
+  #{{ section_id }} .eg__content {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: stretch;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 220ms ease,
+      visibility 0s linear var(--eg-transition);
+  }
+
+
+  /* =========================================================
+     SHOW EXPANDED CONTENT
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__content {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 280ms ease 180ms,
+      visibility 0s linear 0s;
+  }
+
+
+  /* =========================================================
+     EXPANDED LEFT CONTENT
+  ========================================================= */
+
+  #{{ section_id }} .eg__content-copy {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex: 0 0 46%;
+  flex-direction: column;
+  justify-content: top;
+  min-width: 0;
+  padding: 34px 30px;
+  background: var(--eg-content-bg);
+  transform: translateX(-18px);
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+  /* =========================================================
+     EXPANDED CONTENT SLIDE IN
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__content-copy {
+    transform:
+      translateX(0);
+  }
+
+
+  /* =========================================================
+     EXPANDED HEADING
+  ========================================================= */
+
+#{{ section_id }} .eg__content-heading {
+  margin: 0 0 15px;
+  color: var(--eg-heading-color);
+  font-size: {{ section.settings.expanded_heading_size }}px;
+  font-weight: 700;
+  line-height: 1.08;
+  transform: translateY(6px);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
+              opacity 420ms ease 80ms;
+  opacity: 0;
+}
+#{{ section_id }} .eg__panel.is-active .eg__content-heading {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+#{{ section_id }} .eg__description {
+  margin: 0;
+  color: var(--eg-description-color);
+  font-size: {{ section.settings.description_size }}px;
+  line-height: 1.55;
+  transform: translateY(6px);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1) 130ms,
+              opacity 420ms ease 130ms;
+  opacity: 0;
+}
+#{{ section_id }} .eg__panel.is-active .eg__description {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+#{{ section_id }} .eg__tagline {
+  margin-top: 22px;
+  color: var(--eg-tagline-color);
+  font-size: {{ section.settings.tagline_size }}px;
+  font-weight: {{ section.settings.tagline_weight }};
+  line-height: 1.1;
+  transform: translateY(6px);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1) 180ms,
+              opacity 420ms ease 180ms;
+  opacity: 0;
+}
+#{{ section_id }} .eg__panel.is-active .eg__tagline {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__content-heading {
+    transform:
+      translateY(0);
+  }
+
+  /* =========================================================
+     EXPANDED DESCRIPTION
+  ========================================================= */
+
+  #{{ section_id }} .eg__description {
+    margin: 0;
+  color: var(--eg-description-color);
+  font-size: {{ section.settings.description_size }}px;
+  line-height: 1.55;
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 550ms cubic-bezier(0.65, 0, 0.35, 1) 150ms,
+              opacity 200ms ease 150ms;
+  }
+#{{ section_id }} .eg__panel.is-active .eg__description {
+  opacity: 1;
+  clip-path: inset(0 0 0% 0);
+}
+  #{{ section_id }} .eg__description p {
+    margin: 0;
+  }
+  #{{ section_id }} .eg__panel.is-active
+  .eg__description {
+    transform:
+      translateY(0);
+  }
+  /* =========================================================
+     EXPANDED TAGLINE
+  ========================================================= */
+
+  #{{ section_id }} .eg__tagline {
+    margin-top: 22px;
+    color:
+      var(--eg-tagline-color);
+    font-size:
+      {{ section.settings.tagline_size }}px;
+    font-weight:
+      {{ section.settings.tagline_weight }};
+    line-height: 1.1;
+    transform:
+      translateY(12px);
+    transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1) 200ms;
+  }
+  #{{ section_id }} .eg__panel.is-active
+  .eg__tagline {
+    transform:
+      translateY(0);
+  }
+
+
+  /* =========================================================
+     EXPANDED RIGHT IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .eg__expanded-media {
+    position: relative;
+    flex: 1 1 54%;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    background:  var(--eg-card-bg, #102A72);
+  }
+
+
+  /* =========================================================
+     EXPANDED IMAGE OVERLAY
+  ========================================================= */
+
+  #{{ section_id }} .eg__expanded-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.08),
+        transparent 35%
+      );
+    pointer-events: none;
+  }
+
+
+  /* =========================================================
+     EXPANDED IMAGE
+  ========================================================= */
+
+  #{{ section_id }} .eg__expanded-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform:
+      scale(1.05);
+    transition:
+      transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+
+  #{{ section_id }} .eg__panel.is-active
+  .eg__expanded-image {
+    transform:
+      scale(1);
+  }
+
+  /* =========================================================
+     FOCUS STATE
+  ========================================================= */
+
+  #{{ section_id }} .eg__panel:focus-visible {
+    outline:
+      3px solid {{ section.settings.focus_color }};
+    outline-offset: 3px;
+  }
+
+
+  /* =========================================================
+     TABLET / MOBILE
+  ========================================================= */
+
+  @media screen and (max-width: 989px) {
+    #{{ section_id }} {
+      --eg-default-content-height: 70px;
+      padding-top:
+        {{ section.settings.padding_top_mobile }}px;
+      padding-bottom:
+        {{ section.settings.padding_bottom_mobile }}px;
+    }
+
+    /* =======================================================
+       MOBILE CONTAINER
+    ======================================================= */
+
+    #{{ section_id }} .eg__container {
+      padding:
+        0 16px;
+    }
+    /* =======================================================
+       MOBILE GALLERY
+    ======================================================= */
+    #{{ section_id }} .eg__gallery {
+      flex-direction: column;
+
+      gap:
+        {{ section.settings.mobile_gap }}px;
+    }
+    /* =======================================================
+       MOBILE PANEL
+    ======================================================= */
+    #{{ section_id }} .eg__panel {
+      flex: none;
+      width: 100%;
+      height:
+        {{ section.settings.mobile_collapsed_height }}px;
+      transition:
+        height var(--eg-transition),
+        box-shadow var(--eg-transition);
+    }
+    #{{ section_id }} .eg__panel.is-active {
+      flex: none;
+      height:
+        {{ section.settings.mobile_expanded_height }}px;
+    }
+    /* =======================================================
+       MOBILE NORMAL HEADING
+    ======================================================= */
+    #{{ section_id }} .eg__default-content {
+      height:
+        var(--eg-default-content-height);
+      padding:
+        20px 20px 12px;
+    }
+    #{{ section_id }} .eg__default-heading {
+      font-size:
+        {{ section.settings.mobile_heading_size }}px;
+    }
+
+    /* =======================================================
+       MOBILE IMAGE
+    ======================================================= */
+
+    #{{ section_id }} .eg__media {
+      top:
+        var(--eg-default-content-height);
+    }
+    #{{ section_id }} .eg__overlay {
+      top:
+        var(--eg-default-content-height);
+    }
+
+    /* =======================================================
+       MOBILE EXPANDED CONTENT
+    ======================================================= */
+    #{{ section_id }} .eg__content {
+      align-items: flex-end;
+    }
+    #{{ section_id }} .eg__content-copy {
+      flex:
+        1 1 auto;
+      width: 100%;
+      min-height: 58%;
+      padding:
+        24px 20px 22px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0) 0%,
+          var(--eg-content-bg) 22%
+        );
+      justify-content: flex-start;
+    }
+
+
+    /* =======================================================
+       MOBILE EXPANDED IMAGE
+    ======================================================= */
+
+    #{{ section_id }} .eg__expanded-media {
+      display: none;
+    }
+
+
+    /* =======================================================
+       MOBILE EXPANDED HEADING
+    ======================================================= */
+
+    #{{ section_id }} .eg__content-heading {
+      font-size:
+        {{ section.settings.mobile_heading_size }}px;
+    }
+
+
+    /* =======================================================
+       MOBILE EXPANDED DESCRIPTION
+    ======================================================= */
+
+    #{{ section_id }} .eg__description {
+      font-size:
+        {{ section.settings.mobile_description_size }}px;
+    }
+
+
+    /* =======================================================
+       MOBILE TAGLINE
+    ======================================================= */
+    #{{ section_id }} .eg__tagline {
+      margin-top:
+        14px;
+      font-size:
+        {{ section.settings.mobile_tagline_size }}px;
+    }
+  }
+
+  /* =========================================================
+     SMALL MOBILE
+  ========================================================= */
+  @media screen and (max-width: 749px) {
+    #{{ section_id }} {
+      --eg-default-content-height: 68px;
+    }
+    #{{ section_id }} .eg__container {
+      padding:
+        0 14px;
+    }
+    #{{ section_id }} .eg__default-content {
+      padding:
+        18px 18px 10px;
+    }
+    #{{ section_id }} .eg__default-heading {
+      margin: 0;
+    }
+  }
+  /* =========================================================
+     REDUCED MOTION
+  ========================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    #{{ section_id }} .eg__panel,
+    #{{ section_id }} .eg__image,
+    #{{ section_id }} .eg__overlay,
+    #{{ section_id }} .eg__content,
+    #{{ section_id }} .eg__content-copy,
+    #{{ section_id }} .eg__content-heading,
+    #{{ section_id }} .eg__description,
+    #{{ section_id }} .eg__tagline,
+    #{{ section_id }} .eg__expanded-image,
+    #{{ section_id }} .eg__default-content {
+      transition: none !important;
+    }
+  }
+{%- endstyle -%}
+<section
+  id="{{ section_id }}"
+  class="eg"
+  data-expand-gallery
+>
+  <div class="eg__container">
+    {% if section.settings.heading != blank or section.settings.subheading != blank %}
+      <div
+        class="eg__header"
+        data-align="{{ section.settings.heading_alignment }}"
+      >
+        {% if section.settings.eyebrow != blank %}
+          <p class="eg__eyebrow">
+            {{ section.settings.eyebrow }}
+          </p>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="eg__heading">
+            {{ section.settings.heading }}
+          </h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="eg__subheading">
+            {{ section.settings.subheading }}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div
+      class="eg__gallery"
+      role="list"
+      aria-label="{{ section.settings.aria_label | escape }}"
+    >
+      {% for block in section.blocks %}
+        {% assign image = block.settings.background_image %}
+       <article
+        class="eg__panel"
+        role="listitem"
+        tabindex="0"
+        data-panel
+        data-index="{{ forloop.index0 }}"
+        aria-label="{{ block.settings.label | escape }}"
+        background: linear-gradient(
+            {{ section.settings.card_gradient_direction }},
+            {{ section.settings.card_gradient_start }},
+            {{ section.settings.card_gradient_end }}
+          );
+        {{ block.shopify_attributes }}
+        >
+    <!-- Card image -->
+    <div class="eg__media">
+        {% if image != blank %}
+        {{
+            image
+            | image_url: width: 1800
+            | image_tag:
+            class: 'eg__image',
+            loading: 'lazy',
+            widths: '400, 600, 900, 1200, 1500, 1800',
+            sizes: '(min-width: 990px) 25vw, 100vw'
+        }}
+        {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'eg__placeholder' }}
+        {% endif %}
+    </div>
+    <!-- Image overlay -->
+    <div class="eg__overlay"></div>
+    <!-- NORMAL STATE CONTENT -->
+    <div class="eg__default-content">
+        {% if block.settings.label != blank %}
+        <h3 class="eg__default-heading">
+            {{ block.settings.label }}
+        </h3>
+        {% endif %}
+        {% if block.settings.description != blank %}
+        <div class="eg__default-description">
+            {{ block.settings.description }}
+        </div>
+        {% endif %}
+    </div>
+    <!-- EXPANDED STATE -->
+    <div class="eg__content">
+        <!-- LEFT CONTENT -->
+        <div class="eg__content-copy">
+        {% if block.settings.label != blank %}
+            <h3 class="eg__content-heading">
+            {{ block.settings.label }}
+            </h3>
+        {% endif %}
+        {% if block.settings.description != blank %}
+            <div class="eg__description">
+            {{ block.settings.description }}
+            </div>
+        {% endif %}
+        {% if block.settings.tagline != blank %}
+            <div class="eg__tagline">
+            {{ block.settings.tagline }}
+            </div>
+        {% endif %}
+        </div>
+        <!-- RIGHT IMAGE -->
+        <div class="eg__expanded-media">
+        {% if image != blank %}
+            {{
+            image
+            | image_url: width: 1800
+            | image_tag:
+                class: 'eg__expanded-image',
+                loading: 'lazy',
+                widths: '600, 900, 1200, 1500, 1800',
+                sizes: '(min-width: 990px) 50vw, 100vw'
+            }}
+        {% else %}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'eg__expanded-image' }}
+        {% endif %}
+            </div>
+        </div>
+    </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<script>
+  (() => {
+    const initExpandingGallery = (root) => {
+      if (!root || root.dataset.initialized === 'true') {
+        return;
+      }
+      root.dataset.initialized = 'true';
+      const gallery = root.querySelector('.eg__gallery');
+      const panels = Array.from(
+        root.querySelectorAll('[data-panel]')
+      );
+      if (!gallery || !panels.length) {
+        return;
+      }
+      const isMobile = () => {
+        return window.matchMedia('(max-width: 989px)').matches;
+      };
+      /*
+       * ---------------------------------------------
+       * Set active panel
+       * ---------------------------------------------
+       */
+      const setActive = (panel) => {
+        panels.forEach((item) => {
+          item.classList.toggle(
+            'is-active',
+            item === panel
+          );
+        });
+      };
+      /*
+       * ---------------------------------------------
+       * Clear active panel
+       * ---------------------------------------------
+       */
+      const clearActive = () => {
+        panels.forEach((panel) => {
+          panel.classList.remove('is-active');
+        });
+      };
+      /*
+       * ---------------------------------------------
+       * DESKTOP
+       *
+       * Hovering one panel expands it.
+       * All other panels shrink automatically
+       * through CSS flex values.
+       * ---------------------------------------------
+       */
+      panels.forEach((panel) => {
+        panel.addEventListener('mouseenter', () => {
+          if (isMobile()) {
+            return;
+          }
+          setActive(panel);
+        });
+        panel.addEventListener('focusin', () => {
+          if (isMobile()) {
+            return;
+          }
+          setActive(panel);
+        });
+
+        panel.addEventListener('click', () => {
+          /*
+           * On touch devices:
+           * first tap opens the panel.
+           * second tap closes it.
+           */
+          if (!isMobile()) {
+            return;
+          }
+          const alreadyActive =
+            panel.classList.contains('is-active');
+          if (alreadyActive) {
+            clearActive();
+          } else {
+            setActive(panel);
+          }
+        });
+      });
+
+      /*
+       * ---------------------------------------------
+       * When mouse leaves the entire gallery,
+       * return everything to equal width.
+       * ---------------------------------------------
+       */
+      gallery.addEventListener('mouseleave', () => {
+        if (isMobile()) {
+          return;
+        }
+        clearActive();
+      });
+
+      /*
+       * ---------------------------------------------
+       * Keyboard support
+       * ---------------------------------------------
+       */
+      panels.forEach((panel) => {
+        panel.addEventListener('keydown', (event) => {
+          if (
+            event.key === 'Enter' ||
+            event.key === ' '
+          ) {
+            event.preventDefault();
+            const alreadyActive =
+              panel.classList.contains('is-active');
+            if (alreadyActive) {
+              clearActive();
+            } else {
+              setActive(panel);
+            }
+          }
+        });
+      });
+
+      /*
+       * ---------------------------------------------
+       * Reset desktop state when resizing
+       * ---------------------------------------------
+       */
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          if (!isMobile()) {
+            clearActive();
+          }
+        }, 150);
+      });
+    };
+
+    /*
+     * ---------------------------------------------
+     * Shopify Theme Editor support
+     * ---------------------------------------------
+     */
+    const initialize = () => {
+      document
+        .querySelectorAll('[data-expand-gallery]')
+        .forEach(initExpandingGallery);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        initialize
+      );
+    } else {
+      initialize();
+    }
+    /*
+     * Shopify dynamically loads sections
+     */
+    document.addEventListener(
+      'shopify:section:load',
+      (event) => {
+        const section =
+          event.target.querySelector('[data-expand-gallery]');
+        if (section) {
+          initExpandingGallery(section);
+        }
+      }
+    );
+
+  })();
+</script>
+
+
+{% schema %}
+
+{
+  "name": "Expanding Feature Gallery",
+  "tag": "section",
+  "class": "expanding-feature-gallery-section",
+
+  "settings": [
+
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our capabilities"
+    },
+
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Built for modern Shopify brands"
+    },
+
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Description",
+      "default": "<p>Explore the features and technology behind our premium Shopify themes.</p>"
+    },
+
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading bottom spacing",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 900,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "default": 1500
+    },
+
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Panel height - desktop",
+      "min": 300,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 500
+    },
+
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Panel gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Panel radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+
+    {
+      "type": "range",
+      "id": "active_flex",
+      "label": "Expanded panel size",
+      "min": 2,
+      "max": 6,
+      "step": 0.1,
+      "default": 3.4
+    },
+
+    {
+      "type": "range",
+      "id": "collapsed_flex",
+      "label": "Collapsed panel size",
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 0.7
+    },
+
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "label": "Animation speed",
+      "min": 300,
+      "max": 5000,
+      "step": 50,
+      "unit": "ms",
+      "default": 650
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Section background",
+      "default": "#F4F8FF"
+    },
+
+    {
+      "type": "color",
+      "id": "content_gradient_start",
+      "label": "Expanded content gradient start",
+      "default": "#0B1D55"
+    },
+    {
+      "type": "color",
+      "id": "content_gradient_end",
+      "label": "Expanded content gradient end",
+      "default": "#163A7A"
+    },
+    {
+      "type": "select",
+      "id": "content_gradient_direction",
+      "label": "Expanded content gradient direction",
+      "options": [
+        {
+          "value": "to right",
+          "label": "Left to Right"
+        },
+        {
+          "value": "to left",
+          "label": "Right to Left"
+        },
+        {
+          "value": "to bottom",
+          "label": "Top to Bottom"
+        },
+        {
+          "value": "to top",
+          "label": "Bottom to Top"
+        },
+        {
+          "value": "135deg",
+          "label": "Diagonal"
+        }
+      ],
+      "default": "135deg"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay",
+      "default": "#000000"
+    },
+
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Expanded heading color",
+      "default": "#FFFFFF"
+    },
+
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#E5EDFF"
+    },
+
+    {
+      "type": "color",
+      "id": "tagline_color",
+      "label": "Tagline color",
+      "default": "#FFFFFF"
+    },
+
+    {
+      "type": "color",
+      "id": "section_heading_color",
+      "label": "Section heading color",
+      "default": "#111827"
+    },
+
+    {
+      "type": "color",
+      "id": "section_description_color",
+      "label": "Section description color",
+      "default": "#64748B"
+    },
+
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#1D4ED8"
+    },
+
+    {
+      "type": "color",
+      "id": "focus_color",
+      "label": "Focus outline",
+      "default": "#3B82F6"
+    },
+
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+
+    {
+      "type": "range",
+      "id": "section_heading_size",
+      "label": "Section heading size",
+      "min": 24,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+
+    {
+      "type": "range",
+      "id": "section_description_size",
+      "label": "Section description size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Eyebrow size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Collapsed label size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 17
+    },
+
+    {
+      "type": "range",
+      "id": "expanded_heading_size",
+      "label": "Expanded heading size",
+      "min": 18,
+      "max": 42,
+      "step": 1,
+      "unit": "px",
+      "default": 27
+    },
+
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+
+    {
+      "type": "range",
+      "id": "tagline_size",
+      "label": "Tagline size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "range",
+      "id": "tagline_weight",
+      "label": "Tagline weight",
+      "min": 400,
+      "max": 900,
+      "step": 100,
+      "default": 700
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_collapsed_height",
+      "label": "Collapsed height",
+      "min": 60,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_expanded_height",
+      "label": "Expanded height",
+      "min": 300,
+      "max": 650,
+      "step": 10,
+      "unit": "px",
+      "default": 450
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 18,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile description size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_tagline_size",
+      "label": "Mobile tagline size",
+      "min": 16,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top padding - desktop",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    },
+
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom padding - desktop",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    },
+
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding - mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding - mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 35
+    },
+
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Gallery accessibility label",
+      "default": "Features"
+    }
+
+  ],
+
+  "blocks": [
+
+    {
+      "type": "panel",
+      "name": "Feature panel",
+
+      "settings": [
+
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Panel image"
+        },
+       {
+          "type": "color",
+          "id": "card_gradient_start",
+          "label": "Card gradient start",
+          "default": "#102A72"
+        },
+        {
+          "type": "color",
+          "id": "card_gradient_end",
+          "label": "Card gradient end",
+          "default": "#1E4FA3"
+        },
+        {
+          "type": "select",
+          "id": "card_gradient_direction",
+          "label": "Card gradient direction",
+          "options": [
+            {
+              "value": "to right",
+              "label": "Left to Right"
+            },
+            {
+              "value": "to left",
+              "label": "Right to Left"
+            },
+            {
+              "value": "to bottom",
+              "label": "Top to Bottom"
+            },
+            {
+              "value": "to top",
+              "label": "Bottom to Top"
+            },
+            {
+              "value": "135deg",
+              "label": "Diagonal"
+            }
+          ],
+          "default": "135deg"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Heading",
+          "default": "Design"
+        },
+        
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Create beautiful shopping experiences with a modern, conversion-focused design.</p>"
+        },
+
+        {
+          "type": "text",
+          "id": "tagline",
+          "label": "Tagline",
+          "default": "Built for modern brands"
+        }
+
+      ]
+
+    }
+
+  ],
+
+  "presets": [
+
+    {
+      "name": "Expanding Feature Gallery",
+
+      "blocks": [
+
+        {
+          "type": "panel",
+          "settings": {
+            "label": "Design",
+            "tagline": "Beautiful by design"
+          }
+        },
+
+        {
+          "type": "panel",
+          "settings": {
+            "label": "Technology",
+            "tagline": "Built for performance"
+          }
+        },
+
+        {
+          "type": "panel",
+          "settings": {
+            "label": "AI / ML",
+            "tagline": "Smarter experiences"
+          }
+        },
+
+        {
+          "type": "panel",
+          "settings": {
+            "label": "Business",
+            "tagline": "Built to convert"
+          }
+        }
+
+      ]
+
+    }
+
+  ]
+
+}
+
+{% endschema %}
