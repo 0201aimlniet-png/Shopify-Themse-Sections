@@ -1,0 +1,410 @@
+{%- comment -%}
+  Section: Theme Docs Grid ("Explore Our Themes")
+  File: sections/theme-docs-grid.liquid
+{%- endcomment -%}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{% style %}
+  #tdg-{{ sid }} {
+    --tdg-bg: {{ section.settings.bg_color }};
+    --tdg-card: {{ section.settings.card_bg }};
+    --tdg-border: {{ section.settings.border_color }};
+    --tdg-heading: {{ section.settings.heading_color }};
+    --tdg-text: {{ section.settings.text_color }};
+    --tdg-accent: {{ section.settings.accent_color }};
+    --tdg-cols: {{ section.settings.columns_desktop }};
+    background: var(--tdg-bg);
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+  }
+  #tdg-{{ sid }} .tdg__inner {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ---------- Header ---------- */
+  #tdg-{{ sid }} .tdg__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  #tdg-{{ sid }} .tdg__eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--tdg-accent);
+    margin: 0 0 10px;
+  }
+  #tdg-{{ sid }} .tdg__title {
+    font-size: clamp(24px, 2.6vw, 30px);
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--tdg-heading);
+    margin: 0 0 10px;
+    letter-spacing: -.01em;
+  }
+  #tdg-{{ sid }} .tdg__desc {
+    max-width: 480px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--tdg-text);
+    margin: 0;
+  }
+  #tdg-{{ sid }} .tdg__viewall {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    margin-top: 28px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tdg-accent);
+    text-decoration: none;
+  }
+
+  /* ---------- Grid ---------- */
+  #tdg-{{ sid }} .tdg__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--tdg-cols), minmax(0, 1fr));
+    gap: 24px 28px;
+  }
+
+  /* ---------- Card ---------- */
+  #tdg-{{ sid }} .tdg-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--tdg-card);
+    border: 1px solid var(--tdg-border);
+    border-radius: 12px;
+    padding: 22px 22px 18px;
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    transition: transform .45s cubic-bezier(.2,.7,.2,1),
+                box-shadow .45s cubic-bezier(.2,.7,.2,1),
+                border-color .35s ease;
+  }
+  /* soft spotlight that follows the cursor */
+  #tdg-{{ sid }} .tdg-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%),
+                color-mix(in srgb, var(--tdg-accent) 9%, transparent), transparent 70%);
+    opacity: 0;
+    transition: opacity .35s ease;
+    z-index: -1;
+    pointer-events: none;
+  }
+  #tdg-{{ sid }} .tdg-card:hover,
+  #tdg-{{ sid }} .tdg-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--tdg-accent) 35%, var(--tdg-border));
+    box-shadow: 0 1px 2px rgba(16,24,40,.04),
+                0 14px 32px -12px color-mix(in srgb, var(--tdg-accent) 28%, transparent);
+  }
+  #tdg-{{ sid }} .tdg-card:hover::before { opacity: 1; }
+  #tdg-{{ sid }} .tdg-card:focus-visible {
+    outline: 2px solid var(--tdg-accent);
+    outline-offset: 3px;
+  }
+
+  #tdg-{{ sid }} .tdg-card__top {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  #tdg-{{ sid }} .tdg-card__icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    transition: transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  #tdg-{{ sid }} .tdg-card__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  #tdg-{{ sid }} .tdg-card:hover .tdg-card__icon {
+    transform: scale(1.06) rotate(-3deg);
+  }
+  #tdg-{{ sid }} .tdg-card__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tdg-heading);
+    margin: 4px 0 14px;
+    line-height: 1.35;
+  }
+  #tdg-{{ sid }} .tdg-card__text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--tdg-text);
+    margin: 0;
+  }
+
+  #tdg-{{ sid }} .tdg-card__foot {
+    margin-top: auto;
+    padding-top: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+  }
+  #tdg-{{ sid }} .tdg-card__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--tdg-text);
+  }
+  #tdg-{{ sid }} .tdg-card__count svg { opacity: .7; }
+  #tdg-{{ sid }} .tdg-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--tdg-accent);
+    font-weight: 500;
+  }
+
+  /* arrow nudge */
+  #tdg-{{ sid }} .tdg-arrow { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+  #tdg-{{ sid }} .tdg-card:hover .tdg-arrow,
+  #tdg-{{ sid }} .tdg__viewall:hover .tdg-arrow { transform: translateX(4px); }
+
+  /* ---------- Reveal on scroll (one staggered moment) ---------- */
+  #tdg-{{ sid }}.tdg--animate .tdg-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  #tdg-{{ sid }}.tdg--animate.is-visible .tdg-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 989px) {
+    #tdg-{{ sid }} .tdg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  }
+  @media (max-width: 640px) {
+    #tdg-{{ sid }} { padding-top: {{ section.settings.padding_top | times: 0.7 | round }}px; padding-bottom: {{ section.settings.padding_bottom | times: 0.7 | round }}px; }
+    #tdg-{{ sid }} .tdg__head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    #tdg-{{ sid }} .tdg__viewall { margin-top: 6px; }
+    #tdg-{{ sid }} .tdg__grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #tdg-{{ sid }} *,
+    #tdg-{{ sid }} *::before { transition: none !important; }
+    #tdg-{{ sid }}.tdg--animate .tdg-reveal { opacity: 1; transform: none; }
+    #tdg-{{ sid }} .tdg-card:hover { transform: none; }
+  }
+{% endstyle %}
+
+<section
+  id="tdg-{{ sid }}"
+  class="tdg{% if section.settings.enable_animation %} tdg--animate{% endif %}"
+  data-tdg
+>
+  <div class="tdg__inner">
+    <div class="tdg__head">
+      <div class="tdg-reveal" style="--i:0">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="tdg__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="tdg__title">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <div class="tdg__desc">{{ section.settings.description }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.view_all_label != blank -%}
+        <a
+          class="tdg__viewall tdg-reveal"
+          style="--i:1"
+          href="{{ section.settings.view_all_link | default: '#' }}"
+        >
+          {{ section.settings.view_all_label | escape }}
+          <svg class="tdg-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="tdg__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign icon_bg = b.icon_bg
+          if b.icon_bg_2 != blank and b.icon_bg_2 != 'rgba(0,0,0,0)'
+            assign icon_bg = 'linear-gradient(135deg, ' | append: b.icon_bg | append: ', ' | append: b.icon_bg_2 | append: ')'
+          endif
+          assign link = b.link | default: '#'
+        -%}
+        <a
+          href="{{ link }}"
+          class="tdg-card tdg-reveal"
+          style="--i:{{ forloop.index | plus: 1 }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="tdg-card__top">
+            <span
+              class="tdg-card__icon"
+              style="background:{{ icon_bg }};color:{{ b.icon_letter_color }};"
+              aria-hidden="true"
+            >
+              {%- if b.icon != blank -%}
+                {{ b.icon | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+              {%- else -%}
+                {{ b.icon_letter | escape }}
+              {%- endif -%}
+            </span>
+            <div>
+              <h3 class="tdg-card__title">{{ b.title | escape }}</h3>
+              {%- if b.text != blank -%}
+                <p class="tdg-card__text">{{ b.text | escape }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+
+          <div class="tdg-card__foot">
+            <span class="tdg-card__count">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+              {{ b.article_count }} {{ section.settings.articles_label | escape }}
+            </span>
+            <span class="tdg-card__cta">
+              {{ section.settings.cta_label | escape }}
+              <svg class="tdg-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initTDG(root) {
+      if (!root || root.dataset.tdgReady) return;
+      root.dataset.tdgReady = '1';
+
+      // Staggered reveal when section scrolls into view
+      if (root.classList.contains('tdg--animate')) {
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) { root.classList.add('is-visible'); io.disconnect(); }
+            });
+          }, { threshold: 0.15 });
+          io.observe(root);
+        } else {
+          root.classList.add('is-visible');
+        }
+      }
+
+      // Cursor-following spotlight on cards
+      root.querySelectorAll('.tdg-card').forEach(function (card) {
+        card.addEventListener('pointermove', function (ev) {
+          var r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (ev.clientX - r.left) + 'px');
+          card.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+        });
+      });
+    }
+
+    initTDG(document.getElementById('tdg-{{ sid }}'));
+
+    // Re-init inside the theme editor
+    document.addEventListener('shopify:section:load', function (e) {
+      initTDG(e.target.querySelector('[data-tdg]'));
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Theme docs grid",
+  "tag": "div",
+  "class": "section-theme-docs-grid",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Shopify Themes" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Explore Our Themes" },
+    { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Find detailed documentation for each of our Shopify themes and get the most out of your store.</p>" },
+    { "type": "text", "id": "view_all_label", "label": "View all link text", "default": "View all themes" },
+    { "type": "url", "id": "view_all_link", "label": "View all link" },
+    { "type": "text", "id": "articles_label", "label": "Articles label", "default": "Articles" },
+    { "type": "text", "id": "cta_label", "label": "Card button text", "default": "Explore" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 4, "step": 1, "default": 3 },
+    { "type": "range", "id": "max_width", "label": "Max content width", "min": 900, "max": 1600, "step": 20, "unit": "px", "default": 1120 },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "checkbox", "id": "enable_animation", "label": "Reveal animation on scroll", "default": true },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Section background", "default": "#F8FAFD" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "border_color", "label": "Card border", "default": "#E6EAF2" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#0F1B3D" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#6B7385" },
+    { "type": "color", "id": "accent_color", "label": "Accent (links, label)", "default": "#2F6BF2" }
+  ],
+  "blocks": [
+    {
+      "type": "theme_card",
+      "name": "Theme card",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Theme name" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "Short description of this theme's documentation." },
+        { "type": "number", "id": "article_count", "label": "Number of articles", "default": 10 },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "header", "content": "Icon" },
+        { "type": "image_picker", "id": "icon", "label": "Logo image", "info": "Square image, 120×120px or bigger. If empty, the letter below is shown." },
+        { "type": "text", "id": "icon_letter", "label": "Fallback letter", "default": "T" },
+        { "type": "color", "id": "icon_bg", "label": "Icon background", "default": "#0F1B3D" },
+        { "type": "color", "id": "icon_bg_2", "label": "Icon gradient end (optional)" },
+        { "type": "color", "id": "icon_letter_color", "label": "Letter color", "default": "#FFFFFF" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Theme docs grid",
+      "blocks": [
+        { "type": "theme_card", "settings": { "title": "Vetro Shopify Theme", "text": "Complete guide to setting up and customizing your Vetro store efficiently.", "article_count": 12, "icon_letter": "V", "icon_bg": "#FCE3CC", "icon_letter_color": "#1A1A1A" } },
+        { "type": "theme_card", "settings": { "title": "Athora Shopify Theme", "text": "Step-by-step instructions for installing and configuring your high-performance Athora Shopify store.", "article_count": 18, "icon_letter": "A", "icon_bg": "#5A2A45", "icon_letter_color": "#FFFFFF" } },
+        { "type": "theme_card", "settings": { "title": "Kalles Shopify Theme", "text": "Master the Kalles theme with our detailed setup and customization documentation guides.", "article_count": 24, "icon_letter": "K", "icon_bg": "#000000", "icon_letter_color": "#FFFFFF" } },
+        { "type": "theme_card", "settings": { "title": "Ecomus Shopify Theme", "text": "Easy-to-follow guide for setting up and maximizing your Ecomus theme conversion rates.", "article_count": 15, "icon_letter": "e", "icon_bg": "#E0408A", "icon_bg_2": "#8E44E8", "icon_letter_color": "#FFFFFF" } },
+        { "type": "theme_card", "settings": { "title": "Unsen Shopify Theme", "text": "Comprehensive documentation for installing, managing, and customizing your Unsen theme storefront features.", "article_count": 20, "icon_letter": "u", "icon_bg": "#C8141B", "icon_letter_color": "#FFFFFF" } },
+        { "type": "theme_card", "settings": { "title": "Gecko Shopify Theme", "text": "Guidelines on how to use particular sections of Gecko Shopify theme.", "article_count": 14, "icon_letter": "G", "icon_bg": "#0E1A2B", "icon_letter_color": "#7FD6F0" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
