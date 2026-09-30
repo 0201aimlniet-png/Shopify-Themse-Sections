@@ -1,0 +1,566 @@
+{%- comment -%}
+  Section: Popular Articles FAQ ("Quick answers to common questions")
+  File: sections/popular-articles-faq.liquid
+{%- endcomment -%}
+
+{%- assign sid = section.id -%}
+
+{% style %}
+  #paf-{{ sid }} {
+    --paf-page-bg: {{ section.settings.page_bg }};
+    --paf-panel: {{ section.settings.panel_bg }};
+    --paf-heading: {{ section.settings.heading_color }};
+    --paf-text: {{ section.settings.text_color }};
+    --paf-accent: {{ section.settings.accent_color }};
+    --paf-row: #ffffff;
+    --paf-row-border: #EDF0F7;
+    --paf-ease: cubic-bezier(.2,.7,.2,1);
+    background: var(--paf-page-bg);
+    padding: {{ section.settings.padding_top }}px 20px {{ section.settings.padding_bottom }}px;
+  }
+  #paf-{{ sid }} .paf__panel {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    background:
+      radial-gradient(600px 300px at 85% 40%, color-mix(in srgb, var(--paf-accent) 7%, transparent), transparent 70%),
+      var(--paf-panel);
+    border-radius: 14px;
+    padding: 24px 28px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* ---------- Header ---------- */
+  #paf-{{ sid }} .paf__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--paf-accent);
+    margin: 0 0 14px;
+  }
+  #paf-{{ sid }} .paf__eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 2px;
+  }
+  #paf-{{ sid }} .paf__title {
+    font-size: clamp(20px, 2.2vw, 24px);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--paf-heading);
+    margin: 0 0 12px;
+    letter-spacing: -.01em;
+  }
+  #paf-{{ sid }} .paf__sub {
+    font-size: 13px;
+    color: var(--paf-text);
+    margin: 0 0 20px;
+  }
+
+  /* ---------- FAQ rows ---------- */
+  #paf-{{ sid }} .paf__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  #paf-{{ sid }} .paf-item {
+    background: var(--paf-row);
+    border: 1px solid var(--paf-row-border);
+    border-radius: 8px;
+    transition: border-color .3s ease, box-shadow .35s var(--paf-ease), transform .35s var(--paf-ease);
+  }
+  #paf-{{ sid }} .paf-item:hover {
+    border-color: color-mix(in srgb, var(--paf-accent) 25%, var(--paf-row-border));
+    box-shadow: 0 8px 22px -14px color-mix(in srgb, var(--paf-accent) 45%, transparent);
+  }
+  #paf-{{ sid }} .paf-item.is-open {
+    border-color: color-mix(in srgb, var(--paf-accent) 35%, var(--paf-row-border));
+    box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--paf-accent) 50%, transparent);
+  }
+
+  #paf-{{ sid }} .paf-q {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 16px 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    font: inherit;
+    border-radius: 8px;
+  }
+  #paf-{{ sid }} .paf-q:focus-visible {
+    outline: 2px solid var(--paf-accent);
+    outline-offset: 2px;
+  }
+  #paf-{{ sid }} .paf-q__icon {
+    flex: 0 0 auto;
+    color: #4A5468;
+    display: grid;
+    transition: color .3s ease;
+  }
+  #paf-{{ sid }} .paf-item.is-open .paf-q__icon,
+  #paf-{{ sid }} .paf-q:hover .paf-q__icon { color: var(--paf-accent); }
+
+  #paf-{{ sid }} .paf-q__label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    flex: 1;
+    min-width: 0;
+  }
+  #paf-{{ sid }} .paf-q__text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--paf-heading);
+    line-height: 1.4;
+  }
+
+  /* tag pills */
+  #paf-{{ sid }} .paf-tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 5px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  #paf-{{ sid }} .paf-tag--blue   { background: #EAF1FF; color: #2F6BF2; }
+  #paf-{{ sid }} .paf-tag--green  { background: #E6F6EE; color: #1F9D5B; }
+  #paf-{{ sid }} .paf-tag--purple { background: #F1EAFE; color: #7B3FE4; }
+  #paf-{{ sid }} .paf-tag--pink   { background: #FDEBF3; color: #E0407F; }
+  #paf-{{ sid }} .paf-tag--orange { background: #FFF1E3; color: #D9731A; }
+  #paf-{{ sid }} .paf-tag--gray   { background: #EEF0F4; color: #5B6475; }
+
+  #paf-{{ sid }} .paf-q__chev {
+    flex: 0 0 auto;
+    color: #6B7385;
+    display: grid;
+    transition: transform .4s var(--paf-ease), color .3s ease;
+  }
+  #paf-{{ sid }} .paf-item.is-open .paf-q__chev {
+    transform: rotate(90deg);
+    color: var(--paf-accent);
+  }
+
+  /* smooth-height answer panel */
+  #paf-{{ sid }} .paf-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .45s var(--paf-ease);
+  }
+  #paf-{{ sid }} .paf-item.is-open .paf-a { grid-template-rows: 1fr; }
+  #paf-{{ sid }} .paf-a__clip { overflow: hidden; }
+  #paf-{{ sid }} .paf-a__body {
+    padding: 0 20px 16px 55px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--paf-text);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity .3s ease, transform .4s var(--paf-ease);
+  }
+  #paf-{{ sid }} .paf-item.is-open .paf-a__body {
+    opacity: 1;
+    transform: none;
+    transition-delay: .08s;
+  }
+  #paf-{{ sid }} .paf-a__body p { margin: 0 0 8px; }
+  #paf-{{ sid }} .paf-a__body a { color: var(--paf-accent); }
+  #paf-{{ sid }} .paf-a__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-weight: 500;
+    font-size: 12.5px;
+    color: var(--paf-accent);
+    text-decoration: none;
+  }
+  #paf-{{ sid }} .paf-a__more svg { transition: transform .3s var(--paf-ease); }
+  #paf-{{ sid }} .paf-a__more:hover svg { transform: translateX(4px); }
+
+  /* ---------- Illustration ---------- */
+  #paf-{{ sid }} .paf-art {
+    position: relative;
+    height: 260px;
+    max-width: 340px;
+    width: 100%;
+    margin-left: auto;
+  }
+  #paf-{{ sid }} .paf-art__cloud {
+    position: absolute;
+    top: 8px; right: 40px;
+    width: 26px; height: 18px;
+    background: #fff;
+    border-radius: 999px;
+    opacity: .9;
+  }
+  #paf-{{ sid }} .paf-art__window {
+    position: absolute;
+    top: 42px; left: 0;
+    width: 88%;
+    height: 190px;
+    background: rgba(255,255,255,.75);
+    border: 1px solid #E4E9F5;
+    border-radius: 12px;
+    box-shadow: 0 30px 50px -30px rgba(47,107,242,.35);
+    transform: rotate(-3deg);
+    overflow: hidden;
+  }
+  #paf-{{ sid }} .paf-art__bar {
+    height: 14px;
+    background: #D9E3FB;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding-left: 8px;
+  }
+  #paf-{{ sid }} .paf-art__bar span {
+    width: 3px; height: 3px; border-radius: 50%; background: #9FB6EE;
+  }
+  #paf-{{ sid }} .paf-art__lines {
+    padding: 16px 18px;
+    display: grid;
+    gap: 12px;
+  }
+  #paf-{{ sid }} .paf-art__lines i {
+    display: block;
+    height: 8px;
+    border-radius: 4px;
+    background: #E5ECFA;
+  }
+  #paf-{{ sid }} .paf-art__lines i:nth-child(1) { width: 60%; }
+  #paf-{{ sid }} .paf-art__lines i:nth-child(2) { width: 38%; }
+  #paf-{{ sid }} .paf-art__lines i:nth-child(3) { width: 44%; }
+  #paf-{{ sid }} .paf-art__lines i:nth-child(4) { width: 30%; }
+  #paf-{{ sid }} .paf-art__side {
+    position: absolute;
+    top: 72px; right: 0;
+    display: grid;
+    gap: 12px;
+    width: 56px;
+  }
+  #paf-{{ sid }} .paf-art__side i {
+    display: block; height: 9px; border-radius: 4px; background: #E5ECFA;
+  }
+
+  #paf-{{ sid }} .paf-art__badge {
+    position: absolute;
+    top: 30px; left: 36%;
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--paf-accent) 80%, #fff), var(--paf-accent));
+    display: grid;
+    place-items: center;
+    color: #fff;
+    box-shadow: 0 14px 26px -10px color-mix(in srgb, var(--paf-accent) 70%, transparent);
+    z-index: 3;
+  }
+  #paf-{{ sid }} .paf-art__card {
+    position: absolute;
+    top: 96px; left: 22%;
+    width: 64%;
+    min-height: 140px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 34px 20px 18px;
+    box-shadow: 0 24px 44px -22px rgba(30,60,140,.35);
+    z-index: 2;
+    text-decoration: none;
+    display: block;
+  }
+  #paf-{{ sid }} .paf-art__card strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--paf-heading);
+    margin-bottom: 4px;
+  }
+  #paf-{{ sid }} .paf-art__card span.paf-art__copy {
+    font-size: 13px;
+    color: var(--paf-heading);
+    opacity: .85;
+  }
+  #paf-{{ sid }} .paf-art__go {
+    position: absolute;
+    right: 16px; bottom: 16px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--paf-accent);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    transition: transform .35s var(--paf-ease), box-shadow .35s ease;
+  }
+  #paf-{{ sid }} .paf-art__card:hover .paf-art__go {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--paf-accent) 15%, transparent);
+  }
+  #paf-{{ sid }} .paf-art__card:focus-visible {
+    outline: 2px solid var(--paf-accent);
+    outline-offset: 3px;
+  }
+
+  /* gentle float — the one ambient motion on the section */
+  @keyframes paf-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+  #paf-{{ sid }}.paf--motion .paf-art__badge { animation: paf-float 5s ease-in-out infinite; }
+  #paf-{{ sid }}.paf--motion .paf-art__card  { animation: paf-float 5s ease-in-out infinite .6s; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 989px) {
+    #paf-{{ sid }} .paf__panel { grid-template-columns: 1fr; gap: 28px; }
+    #paf-{{ sid }} .paf-art { margin: 0 auto; }
+    {%- unless section.settings.show_art_mobile %}
+    #paf-{{ sid }} .paf__art-col { display: none; }
+    {%- endunless %}
+  }
+  @media (max-width: 640px) {
+    #paf-{{ sid }} .paf__panel { padding: 20px 16px 22px; }
+    #paf-{{ sid }} .paf-q { padding: 12px 12px 12px 14px; gap: 12px; }
+    #paf-{{ sid }} .paf-a__body { padding: 0 14px 14px 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #paf-{{ sid }} *, #paf-{{ sid }} *::before { transition: none !important; animation: none !important; }
+  }
+{% endstyle %}
+
+<section
+  id="paf-{{ sid }}"
+  class="paf{% if section.settings.enable_float %} paf--motion{% endif %}"
+  data-paf
+  data-single="{{ section.settings.one_at_a_time }}"
+>
+  <div class="paf__panel">
+    <div class="paf__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="paf__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="paf__title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="paf__sub">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+
+      <ul class="paf__list">
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <li class="paf-item{% if forloop.first and section.settings.open_first %} is-open{% endif %}" {{ block.shopify_attributes }}>
+            <button
+              type="button"
+              class="paf-q"
+              id="paf-q-{{ block.id }}"
+              aria-controls="paf-a-{{ block.id }}"
+              aria-expanded="{% if forloop.first and section.settings.open_first %}true{% else %}false{% endif %}"
+            >
+              <span class="paf-q__icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+              </span>
+              <span class="paf-q__label">
+                <span class="paf-q__text">{{ b.question | escape }}</span>
+                {%- if b.tag != blank -%}
+                  <span class="paf-tag paf-tag--{{ b.tag_color }}">{{ b.tag | escape }}</span>
+                {%- endif -%}
+              </span>
+              <span class="paf-q__chev" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              </span>
+            </button>
+
+            <div
+              class="paf-a"
+              id="paf-a-{{ block.id }}"
+              role="region"
+              aria-labelledby="paf-q-{{ block.id }}"
+            >
+              <div class="paf-a__clip">
+                <div class="paf-a__body">
+                  {{ b.answer }}
+                  {%- if b.link != blank -%}
+                    <a class="paf-a__more" href="{{ b.link }}">
+                      {{ b.link_label | default: 'Read full article' | escape }}
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    <div class="paf__art-col">
+      <div class="paf-art">
+        <span class="paf-art__cloud" aria-hidden="true"></span>
+
+        <div class="paf-art__window" aria-hidden="true">
+          <div class="paf-art__bar"><span></span><span></span><span></span></div>
+          <div class="paf-art__lines"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="paf-art__side" aria-hidden="true"><i></i><i></i><i></i></div>
+
+        <span class="paf-art__badge" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2z"/><path d="M12 6.5v13"/></svg>
+        </span>
+
+        <a class="paf-art__card" href="{{ section.settings.card_link | default: '#' }}">
+          <strong>{{ section.settings.card_title | escape }}</strong>
+          <span class="paf-art__copy">{{ section.settings.card_text | escape }}</span>
+          <span class="paf-art__go" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- if section.settings.faq_schema and section.blocks.size > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for block in section.blocks -%}
+    {
+      "@type": "Question",
+      "name": {{ block.settings.question | json }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | strip_html | json }} }
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+<script>
+  (function () {
+    function initPAF(root) {
+      if (!root || root.dataset.pafReady) return;
+      root.dataset.pafReady = '1';
+      var single = root.dataset.single === 'true';
+      var items = root.querySelectorAll('.paf-item');
+
+      function setOpen(item, open) {
+        item.classList.toggle('is-open', open);
+        item.querySelector('.paf-q').setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      items.forEach(function (item) {
+        item.querySelector('.paf-q').addEventListener('click', function () {
+          var willOpen = !item.classList.contains('is-open');
+          if (single && willOpen) items.forEach(function (o) { if (o !== item) setOpen(o, false); });
+          setOpen(item, willOpen);
+        });
+      });
+
+      // Theme editor: open the block you select
+      root.addEventListener('shopify:block:select', function (e) {
+        var item = e.target.closest('.paf-item');
+        if (!item) return;
+        if (single) items.forEach(function (o) { setOpen(o, false); });
+        setOpen(item, true);
+      });
+    }
+
+    initPAF(document.getElementById('paf-{{ sid }}'));
+    document.addEventListener('shopify:section:load', function (e) {
+      initPAF(e.target.querySelector('[data-paf]'));
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Popular articles FAQ",
+  "tag": "div",
+  "class": "section-popular-articles-faq",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "Popular Articles" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Quick answers to common questions" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Get started with our most viewed documentation." },
+
+    { "type": "header", "content": "FAQ behaviour" },
+    { "type": "checkbox", "id": "one_at_a_time", "label": "Keep only one answer open", "default": true },
+    { "type": "checkbox", "id": "open_first", "label": "Open first question by default", "default": false },
+    { "type": "checkbox", "id": "faq_schema", "label": "Add FAQ schema for Google (SEO)", "default": true },
+
+    { "type": "header", "content": "Illustration card" },
+    { "type": "text", "id": "card_title", "label": "Card title", "default": "Step by step" },
+    { "type": "text", "id": "card_text", "label": "Card text", "default": "guides, made simple." },
+    { "type": "url", "id": "card_link", "label": "Card link" },
+    { "type": "checkbox", "id": "enable_float", "label": "Floating animation", "default": true },
+    { "type": "checkbox", "id": "show_art_mobile", "label": "Show illustration on mobile", "default": false },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "label": "Max panel width", "min": 900, "max": 1600, "step": 20, "unit": "px", "default": 1100 },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 40 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "page_bg", "label": "Section background", "default": "#F8FAFD" },
+    { "type": "color", "id": "panel_bg", "label": "Panel background", "default": "#EEF3FC" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#0F1B3D" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#6B7385" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#2F6BF2" }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Your question here" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Write a short, helpful answer here.</p>" },
+        { "type": "text", "id": "tag", "label": "Tag", "default": "Guide" },
+        {
+          "type": "select", "id": "tag_color", "label": "Tag color", "default": "blue",
+          "options": [
+            { "value": "blue", "label": "Blue" },
+            { "value": "green", "label": "Green" },
+            { "value": "purple", "label": "Purple" },
+            { "value": "pink", "label": "Pink" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "gray", "label": "Gray" }
+          ]
+        },
+        { "type": "url", "id": "link", "label": "Full article link (optional)" },
+        { "type": "text", "id": "link_label", "label": "Link text", "default": "Read full article" }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Popular articles FAQ",
+      "blocks": [
+        { "type": "faq", "settings": { "question": "How to install your Shopify theme", "tag": "Installation", "tag_color": "blue", "answer": "<p>Download the theme .zip from your account, then go to Online Store → Themes → Add theme → Upload zip file. Once uploaded, click Customize to start setting it up.</p>" } },
+        { "type": "faq", "settings": { "question": "How to update your theme", "tag": "Theme Update", "tag_color": "green", "answer": "<p>Duplicate your live theme as a backup first. Then upload the latest version and move your customizations over before publishing.</p>" } },
+        { "type": "faq", "settings": { "question": "How to configure theme settings", "tag": "Customization", "tag_color": "purple", "answer": "<p>Open Online Store → Themes → Customize, then click the gear icon (Theme settings) to change colors, fonts, layout and more.</p>" } },
+        { "type": "faq", "settings": { "question": "How to install recommended apps", "tag": "Apps", "tag_color": "pink", "answer": "<p>Visit the Shopify App Store, search for the app, click Install, and follow the setup steps. Most apps add their blocks to the theme editor automatically.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
